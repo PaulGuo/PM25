@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Socket</title>
+</head>
+<body>
+    <script type="text/javascript">
+        var realTimeSocket = new WebSocket('ws://ws.pm25.io:8054');
+        var channelName = 'AmNQKGzUHki_opL9JKexvH7PQr2XF84z:0a9b46b7b35348d9';
+        var askForRealTimeData = function() {
+            realTimeSocket.send('ask:::' + JSON.stringify({
+                t: new Date().getTime() - 0,
+                public_key: '0a9b46b7b35348d9',
+                session_id: 'AmNQKGzUHki_opL9JKexvH7PQr2XF84z'
+            }));
+        };
+
+        // 针对原生WebSocket的Socket.io封装
+        realTimeSocket.onreceive = (function(channelName, handlerFn) {
+            var channels = {};
+            var messageParse = function(message, data) {
+                message = message.split(':::');
+                data = message[1];
+                message = message[0];
+
+                try {
+                    data = JSON.parse(data);
+                } catch(e) {}
+
+                return [message, data];
+            };
+
+            realTimeSocket.onmessage = function(event, message, data, result) {
+                result = messageParse(event.data);
+                message = result[0];
+                data = result[1];
+
+                if(channels.hasOwnProperty(message)) {
+                    channels[message].call(this, data);
+                }
+            };
+
+            return function(channelName, handlerFn) {
+                channels[channelName] = handlerFn;
+            };
+        })();
+
+        realTimeSocket.onreceive(channelName, function(data) {
+            console.info(data);
+            setTimeout(askForRealTimeData, 1000);
+        });
+
+        realTimeSocket.onopen = function(evt) {
+            if(this.readyState === 1) {
+                setTimeout(askForRealTimeData, 1000);
+            }
+        };
+    </script>
+</body>
+</html>

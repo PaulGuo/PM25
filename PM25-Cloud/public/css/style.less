@@ -1,0 +1,494 @@
+@import url(//fonts.googleapis.com/css?family=Abel);
+@import url(font-awesome.min.css);
+
+@blue: #9B9BAD;
+@lighterblue: #58EAE0;
+@lightblue: #EBF9FA;
+@sand: #FBE9E0;
+@cardboard: #ded9d5;
+@barelywhite: #f8f8fa;
+@green: #33B763;
+@lightergreen: #A2FBDC;
+@darkgray: #3A3A3B;
+@yellow: #FBF586;
+
+@freememory: #E5FADE;
+@usedmemory: #fcb6b7;
+@processactions: #888;
+@killaction: #F10;
+@restartaction: @green;
+@reloadaction: #1597E0;
+@debugaction: #c19600;
+@processonline: #33B763;
+@processoffline: #920e00;
+@processerror: #F10;
+@scriptname: #BBB;
+@details: #FFF;
+@section: #F8F8F8;
+@cpuusage: #347FAC;
+@memoryusage: #49AA3C;
+
+.rounded-corners (@radius: 5px) {
+	-webkit-border-radius: @radius;
+	-moz-border-radius: @radius;
+	-ms-border-radius: @radius;
+	-o-border-radius: @radius;
+	border-radius: @radius;
+}
+
+body {
+	background: url(../img/satinweave.png);
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: @darkgray;
+}
+
+h1 {
+	height: 0;
+	padding: 60px 0 0 0;
+	overflow: hidden;
+	background: url(../img/logo.png) no-repeat;
+	margin: 10px 0;
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+only screen and (-o-min-device-pixel-ratio: 3/2),
+only screen and (min--moz-device-pixel-ratio: 1.5),
+only screen and (min-device-pixel-ratio: 1.5) {
+	h1 {
+		background-image: url(../img/logo@2x.png);
+		background-size: auto 60px;
+	}
+}
+
+/* Bootstrap overrides */
+.nav, .pagination, .carousel a {
+	cursor: pointer;
+}
+.nav {
+	margin-bottom: 10px;
+}
+.table {
+	margin: 0;
+}
+.table th {
+	padding-left: 5px;
+	font-weight: normal;
+}
+.table td {
+	text-align: left;
+	padding-left: 5px;
+}
+.alert {
+	margin-bottom: 0;
+}
+/* /Bootstrap overrides */
+
+article, footer {
+	width: 90%;
+	margin: 0 auto;
+	background: #FFF;
+	padding: 10px;
+}
+
+footer {
+	padding-top: 0px;
+}
+footer small {
+	font-size: 10px;
+	color: lighten(@blue, 20%);
+	padding-left: 15px;
+	text-align: right;
+	display: block;
+}
+
+th, figcaption, .information h3, p.noprocesses {
+	color: rgba(0,0,0,0.3);
+	font-size: 13px;
+	padding: 4px;
+	text-align: left;
+}
+
+section {
+	clear: both;
+	background-color: @section;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	padding: 10px;
+
+	h2, .details h3, .logs h3 {
+		font-size: 14px;
+		font-family: 'Abel', sans-serif;
+		font-weight: normal;
+		text-transform: uppercase;
+		letter-spacing: 2px;
+		margin: 0 0 0 5px;
+		padding: 0;
+		color: @blue;
+		line-height: 1.8;
+	}
+}
+
+.system {
+	table {
+		width: 50%;
+		float: left;
+	}
+
+	figure {
+		display: inline-block;
+		width: 50%;
+		margin-top: 3px;
+		margin-bottom: 10px;
+
+		figcaption {
+			border-bottom: 1px solid #DDD;
+			padding-bottom: 9px;
+			margin-bottom: 17px;
+			font-weight: normal;
+		}
+
+		div {
+			display: inline-block;
+			vertical-align: top;
+			height: 28px;
+			width: 50%;
+			text-align: center;
+			padding-top: 14px;
+			font-size: 14px;
+			text-transform: uppercase;
+			color: rgba(0,0,0,0.4);
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		div:nth-child(2) {
+			background: @freememory;
+			-webkit-border-top-left-radius: 6px;
+			-webkit-border-bottom-left-radius: 6px;
+			-moz-border-radius-topleft: 6px;
+			-moz-border-radius-bottomleft: 6px;
+			border-top-left-radius: 6px;
+			border-bottom-left-radius: 6px;
+		}
+
+		div:last-child {
+			background: @usedmemory;
+			-webkit-border-top-right-radius: 6px;
+			-webkit-border-bottom-right-radius: 6px;
+			-moz-border-radius-topright: 6px;
+			-moz-border-radius-bottomright: 6px;
+			border-top-right-radius: 6px;
+			border-bottom-right-radius: 6px;
+		}
+	}
+
+	table {
+		span {
+			display: block;
+		}
+	}
+}
+
+.processes {
+	margin-top: 10px;
+
+	article {
+		width: 100%;
+		background: transparent;
+		padding: 0;
+	}
+
+	article .information h3 {
+		display: none;
+	}
+
+	article:first-of-type .information h3 {
+		display: block;
+		border-bottom: 1px solid #DDD;
+		padding-bottom: 9px;
+		margin: 0;
+		font-weight: normal;
+		line-height: 1;
+	}
+
+	article:first-of-type .information {
+		border-top: none;
+		margin-top: 7px;
+	}
+
+	.noprocesses {
+		padding: 10px 5px 0 5px;
+		margin-bottom: 0;
+	}
+
+	.information {
+		border-top: 1px solid #DDD;
+		display: -webkit-flex;
+		display: flex;
+		margin: 0;
+
+		li {
+			display: inline-block;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			margin: 0;
+
+			p {
+				padding: 15px 4px;
+				margin: 0;
+			}
+		}
+
+		.pid {
+			width: 80px;
+			-webkit-flex-grow: 0;
+			flex-grow: 0;
+		}
+
+		.script {
+			-webkit-flex-grow: 1;
+			flex-grow: 1;
+
+			p {
+				font-weight: bold;
+			}
+		}
+
+		.restarts, .uptime, .status, .cpu, .memory, .actions {
+			width: 80px;
+			-webkit-flex-grow: 0;
+			flex-grow: 0;
+
+			p, h3 {
+				text-align: center;
+			}
+		}
+
+		.uptime {
+			width: 120px;
+		}
+
+		.status {
+			width: 50px;
+
+			i.icon-ok-circle {
+				color: @processonline
+			}
+
+			i.icon-ban-circle {
+				color: @processoffline
+			}
+
+			i.icon-exclamation-sign {
+				color: @processerror
+			}
+
+			i.icon-repeat {
+				color: @restartaction
+			}
+		}
+
+		.actions {
+			a {
+				color: @processactions;
+				cursor: pointer;
+				text-decoration: none;
+			}
+
+			a.icon-play:hover {
+				color: @restartaction;
+			}
+
+			a.icon-remove:hover {
+				color: @killaction;
+			}
+
+			a.icon-refresh:hover {
+				color: @restartaction;
+			}
+
+			a.icon-repeat:hover {
+				color: @reloadaction;
+			}
+
+			a.icon-bug:hover {
+				color: @debugaction;
+			}
+		}
+	}
+
+	.information:hover p {
+		background-color: darken(@section, 5%);
+		cursor: pointer;
+	}
+
+	.information.reloading p {
+		background-color: lighten(@reloadaction, 40%);
+		.animation(reloading, 2.5s, linear, infinite);
+	}
+
+	.information.reloading:hover p {
+		background-color: lighten(@reloadaction, 40%);
+	}
+
+	.information.erroring p {
+		background-color: lighten(@processerror, 40%);
+		.animation(erroring, 2.5s, linear, infinite);
+	}
+
+	.information.erroring:hover p {
+		background-color: lighten(@processerror, 40%);
+	}
+
+	.details, .logs {
+		.rounded-corners(6px);
+		background: @details;
+		padding: 10px;
+
+		h3 {
+			border-bottom: none;
+		}
+	}
+
+	.details {
+		.executable {
+			font-size: 14px;
+			margin: 10px 0;
+			font-family: Monaco, monospace;
+			color: @scriptname;
+		}
+
+		dl {
+			float: right;
+			margin-top: -19px;
+			font-size: 14px;
+			font-family: 'Abel', sans-serif;
+			text-transform: uppercase;
+			letter-spacing: 2px;
+			color: @blue;
+
+			dt, dd {
+				display: inline-block;
+			}
+
+			dt {
+				width: 10px;
+				height: 0;
+				overflow: hidden;
+				padding-top: 10px;
+				margin-left: 5px;
+			}
+
+			dt.cpu {
+				background: @cpuusage;
+			}
+
+			dt.memory {
+				background: @memoryusage;
+			}
+		}
+
+		ul {
+			.rounded-corners(6px);
+			background: #333;
+			color: #FFF;
+			font-family: 'Lucida Console', Monaco, monospace;
+			height: 400px;
+			margin: 10px 5px 5px 5px;
+			overflow: auto;
+			padding: 5px 0;
+
+			li {
+				font-size: 12px;
+				background-color: transparent;
+				color: #FFF;
+				line-height: 1.4;
+				white-space: pre;
+				padding: 1px 5px;
+			}
+
+			li.error {
+				background-color: #330100;
+			}
+		}
+
+		ul:after {
+			content: "\2588";
+			margin-left: 5px;
+
+			.animation(blinker, 1s, linear, infinite);
+		}
+	}
+}
+
+.animation(@name, @duration: 300ms, @timingFunction: linear, @iterationCount: infinite) {
+	-webkit-animation: @name @duration @timingFunction @iterationCount;
+	-moz-animation: @name @duration @timingFunction @iterationCount;
+	-ms-animation: @name @duration @timingFunction @iterationCount;
+	-animation: @name @duration @timingFunction @iterationCount;
+}
+
+@-moz-keyframes blinker {
+	0% { opacity: 1.0; }
+	50% { opacity: 0.0; }
+	100% { opacity: 1.0; }
+}
+
+@-webkit-keyframes blinker {
+	0% { opacity: 1.0; }
+	50% { opacity: 0.0; }
+	100% { opacity: 1.0; }
+}
+
+@keyframes blinker {
+	0% { opacity: 1.0; }
+	50% { opacity: 0.0; }
+	100% { opacity: 1.0; }
+}
+
+@-moz-keyframes reloading {
+  0% { background: fade(@reloadaction, 20%); }
+  50% { background: fade(@reloadaction, 5%); }
+  100% { background: fade(@reloadaction, 20%); }
+}
+
+@-webkit-keyframes reloading {
+  0% { background: fade(@reloadaction, 20%); }
+  50% { background: fade(@reloadaction, 5%); }
+  100% { background: fade(@reloadaction, 20%); }
+}
+
+@keyframes reloading {
+  0% { background: fade(@reloadaction, 20%); }
+  50% { background: fade(@reloadaction, 5%); }
+  100% { background: fade(@reloadaction, 20%); }
+}
+
+@-moz-keyframes erroring {
+  0% { background: fade(@processerror, 20%); }
+  50% { background: fade(@processerror, 5%); }
+  100% { background: fade(@processerror, 20%); }
+}
+
+@-webkit-keyframes erroring {
+  0% { background: fade(@processerror, 20%); }
+  50% { background: fade(@processerror, 5%); }
+  100% { background: fade(@processerror, 20%); }
+}
+
+@keyframes erroring {
+  0% { background: fade(@processerror, 20%); }
+  50% { background: fade(@processerror, 5%); }
+  100% { background: fade(@processerror, 20%); }
+}
+
+@media only screen and (max-width: 700px) {
+	.system {
+		table, figure {
+			width: 100%;
+			float: none;
+		}
+	}
+}

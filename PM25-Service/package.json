@@ -1,0 +1,27 @@
+{
+  "name": "PM2.5-Service",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./index"
+  },
+  "dependencies": {
+    "axon": "^2.0.1",
+    "axon-rpc": "0.0.3",
+    "babel": "^5.1.11",
+    "babel-preset-stage-0": "^6.1.18",
+    "bluebird": "^2.9.24",
+    "connect-mongo": "^0.8.0",
+    "express": "^4.13.3",
+    "mongodb": "^1.4.34",
+    "nssocket": "^0.5.3",
+    "open-falcon": "^1.3.2",
+    "socket.io": "^1.3.5",
+    "ws": "^0.8.0"
+  },
+  "devDependencies": {
+    "assert": "^1.3.0",
+    "babel": "^5.8.29",
+    "pm25": "^0.143.4"
+  }
+}

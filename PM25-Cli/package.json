@@ -1,0 +1,125 @@
+{
+  "name": "pm25",
+  "preferGlobal": "true",
+  "version": "0.143.5",
+  "engines": {
+    "node": ">=0.10"
+  },
+  "directories": {
+    "bin": "./bin",
+    "lib": "./lib",
+    "example": "./examples"
+  },
+  "author": {
+    "name": "GuoKai",
+    "email": "badkaikai@gmail.com",
+    "url": "http://pm25.io"
+  },
+  "maintainers": [
+    {
+      "name": "GuoKai",
+      "email": "badkaikai@gmail.com"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "GuoKai",
+      "email": "badkaikai@gmail.com"
+    }
+  ],
+  "homepage": "https://github.com/PaulGuo/PM2.5",
+  "description": "Production process manager for Node.JS applications with a built-in load balancer.",
+  "main": "index.js",
+  "scripts": {
+    "test": "PM2_CONCURRENT_ACTIONS=1 NODE_ENV=test bash test/pm2_programmatic_tests.sh && NODE_ENV=test bash test/pm2_behavior_tests.sh"
+  },
+  "keywords": [
+    "cli",
+    "fault tolerant",
+    "sysadmin",
+    "tools",
+    "pm2",
+    "logs",
+    "log",
+    "json",
+    "express",
+    "hapi",
+    "kraken",
+    "reload",
+    "microservice",
+    "programmatic",
+    "harmony",
+    "node-pm2",
+    "production",
+    "keymetrics",
+    "deploy",
+    "deployment",
+    "daemon",
+    "supervisor",
+    "nodemon",
+    "pm2.io",
+    "ghost",
+    "ghost production",
+    "monitoring",
+    "process manager",
+    "forever",
+    "forever-monitor",
+    "keep process alive",
+    "process configuration",
+    "clustering",
+    "cluster cli",
+    "cluster",
+    "cron",
+    "devops",
+    "dev ops"
+  ],
+  "bin": {
+    "pm25": "./bin/pm2",
+    "pm25-dev": "./bin/pm2-dev"
+  },
+  "dependencies": {
+    "async": "1.2.1",
+    "chalk": "1.0.0",
+    "chokidar": "^1.0.0",
+    "cli-table": "0.3.1",
+    "coffee-script": "1.9.3",
+    "colors": "1.1.0",
+    "commander": "2.8.1",
+    "cron": "1.0.9",
+    "debug": "2.2.0",
+    "eventemitter2": "0.4.14",
+    "moment": "2.10.3",
+    "nssocket": "0.5.3",
+    "pidusage": "0.1.1",
+    "pmx": "latest",
+    "vizion": "latest",
+    "pm2-axon": "latest",
+    "pm2-axon-rpc": "0.3.6",
+    "pm2-deploy": "latest",
+    "pm2-multimeter": "0.1.2",
+    "safe-clone-deep": "1.0.5",
+    "babel": "^5.x",
+    "is-iojs": "1.1.0",
+    "shelljs": "0.5.1",
+    "isbinaryfile": "^2.0.3",
+    "semver": "4.3.6"
+  },
+  "devDependencies": {
+    "mocha": "^1.20.1",
+    "should": "^4.0.0",
+    "better-assert": "^1.0.0",
+    "punt": "*"
+  },
+  "optionalDependencies": {
+    "pm2-logs": "~0.1.1",
+    "ikt": "git+http://ikt.pm2.io/ikt.git#master"
+  },
+  "bugs": {
+    "url": "https://github.com/PaulGuo/PM2.5/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PaulGuo/PM2.5.git"
+  },
+  "license": "AGPL-3.0"
+}

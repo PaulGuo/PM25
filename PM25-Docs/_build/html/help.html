@@ -1,0 +1,208 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>帮助 &mdash; PM2.5 0.0.128 文档</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PM2.5 0.0.128 文档" href="index.html"/>
+        <link rel="prev" title="进阶指南" href="advanced.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> PM2.5
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html"> 简介</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#id2">服务架构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#id3">功能简介</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html"> 如何安装</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#id2">接入指南</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#id3">命令行使用</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html"> 快速上手</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id2">创建账号</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id3">创建新桶</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id4">部署接入</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id5">数据查看</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id6">错误日志</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id7">监控报警</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#ios">iOS客户端</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html"> 进阶指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html#id2">内部实现</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href=""> 帮助</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">PM2.5</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>帮助</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/help.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="id1">
+<h1>帮助<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<p><strong>1. 为什么我的主机状态当前是飘红的？</strong></p>
+<p>如下图所示，出现这种情况的原因很可能是你的服务端时间同标准时间不同步，或者服务端的数据上报有延迟导致的，飘红状态下会在主机名右侧显示延迟的时间差，如果延迟的时间差居高不下并持续增长则意味着你的服务器可能停止了向服务端的数据上报。</p>
+<img alt="_images/host_red.png" src="_images/host_red.png" />
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="advanced.html" class="btn btn-neutral" title="进阶指南" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2015, GuoKai.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.128',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

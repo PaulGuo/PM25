@@ -1,0 +1,468 @@
+@import url(//fonts.googleapis.com/css?family=Abel);
+@import url(font-awesome.min.css);
+body {
+  background: url(../img/satinweave.png);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #3a3a3b;
+}
+h1 {
+  height: 0;
+  padding: 60px 0 0 0;
+  overflow: hidden;
+  background: url(../img/logo.png) no-repeat;
+  margin: 10px 0;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {
+  h1 {
+    background-image: url(../img/logo@2x.png);
+    background-size: auto 60px;
+  }
+}
+/* Bootstrap overrides */
+.nav,
+.pagination,
+.carousel a {
+  cursor: pointer;
+}
+.nav {
+  margin-bottom: 10px;
+}
+.table {
+  margin: 0;
+}
+.table th {
+  padding-left: 5px;
+  font-weight: normal;
+}
+.table td {
+  text-align: left;
+  padding-left: 5px;
+}
+.alert {
+  margin-bottom: 0;
+}
+/* /Bootstrap overrides */
+article,
+footer {
+  width: 90%;
+  margin: 0 auto;
+  background: #FFF;
+  padding: 10px;
+}
+footer {
+  padding-top: 0px;
+}
+footer small {
+  font-size: 10px;
+  color: #d3d3db;
+  padding-left: 15px;
+  text-align: right;
+  display: block;
+}
+th,
+figcaption,
+.information h3,
+p.noprocesses {
+  color: rgba(0, 0, 0, 0.3);
+  font-size: 13px;
+  padding: 4px;
+  text-align: left;
+}
+section {
+  clear: both;
+  background-color: #f8f8f8;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  padding: 10px;
+}
+section h2,
+section .details h3,
+section .logs h3 {
+  font-size: 14px;
+  font-family: 'Abel', sans-serif;
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 0 5px;
+  padding: 0;
+  color: #9b9bad;
+  line-height: 1.8;
+}
+.system table {
+  width: 50%;
+  float: left;
+}
+.system figure {
+  display: inline-block;
+  width: 50%;
+  margin-top: 3px;
+  margin-bottom: 10px;
+}
+.system figure figcaption {
+  border-bottom: 1px solid #DDD;
+  padding-bottom: 9px;
+  margin-bottom: 17px;
+  font-weight: normal;
+}
+.system figure div {
+  display: inline-block;
+  vertical-align: top;
+  height: 28px;
+  width: 50%;
+  text-align: center;
+  padding-top: 14px;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.system figure div:nth-child(2) {
+  background: #e5fade;
+  -webkit-border-top-left-radius: 6px;
+  -webkit-border-bottom-left-radius: 6px;
+  -moz-border-radius-topleft: 6px;
+  -moz-border-radius-bottomleft: 6px;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+.system figure div:last-child {
+  background: #fcb6b7;
+  -webkit-border-top-right-radius: 6px;
+  -webkit-border-bottom-right-radius: 6px;
+  -moz-border-radius-topright: 6px;
+  -moz-border-radius-bottomright: 6px;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+.system table span {
+  display: block;
+}
+.processes {
+  margin-top: 10px;
+}
+.processes article {
+  width: 100%;
+  background: transparent;
+  padding: 0;
+}
+.processes article .information h3 {
+  display: none;
+}
+.processes article:first-of-type .information h3 {
+  display: block;
+  border-bottom: 1px solid #DDD;
+  padding-bottom: 9px;
+  margin: 0;
+  font-weight: normal;
+  line-height: 1;
+}
+.processes article:first-of-type .information {
+  border-top: none;
+  margin-top: 7px;
+}
+.processes .noprocesses {
+  padding: 10px 5px 0 5px;
+  margin-bottom: 0;
+}
+.processes .information {
+  border-top: 1px solid #DDD;
+  display: -webkit-flex;
+  display: flex;
+  margin: 0;
+}
+.processes .information li {
+  display: inline-block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+.processes .information li p {
+  padding: 15px 4px;
+  margin: 0;
+}
+.processes .information .pid {
+  width: 80px;
+  -webkit-flex-grow: 0;
+  flex-grow: 0;
+}
+.processes .information .script {
+  -webkit-flex-grow: 1;
+  flex-grow: 1;
+}
+.processes .information .script p {
+  font-weight: bold;
+}
+.processes .information .restarts,
+.processes .information .uptime,
+.processes .information .status,
+.processes .information .cpu,
+.processes .information .memory,
+.processes .information .actions {
+  width: 80px;
+  -webkit-flex-grow: 0;
+  flex-grow: 0;
+}
+.processes .information .restarts p,
+.processes .information .uptime p,
+.processes .information .status p,
+.processes .information .cpu p,
+.processes .information .memory p,
+.processes .information .actions p,
+.processes .information .restarts h3,
+.processes .information .uptime h3,
+.processes .information .status h3,
+.processes .information .cpu h3,
+.processes .information .memory h3,
+.processes .information .actions h3 {
+  text-align: center;
+}
+.processes .information .uptime {
+  width: 120px;
+}
+.processes .information .status {
+  width: 50px;
+}
+.processes .information .status i.icon-ok-circle {
+  color: #33b763;
+}
+.processes .information .status i.icon-ban-circle {
+  color: #920e00;
+}
+.processes .information .status i.icon-exclamation-sign {
+  color: #ff1100;
+}
+.processes .information .status i.icon-repeat {
+  color: #33b763;
+}
+.processes .information .actions a {
+  color: #888888;
+  cursor: pointer;
+  text-decoration: none;
+}
+.processes .information .actions a.icon-play:hover {
+  color: #33b763;
+}
+.processes .information .actions a.icon-remove:hover {
+  color: #ff1100;
+}
+.processes .information .actions a.icon-refresh:hover {
+  color: #33b763;
+}
+.processes .information .actions a.icon-repeat:hover {
+  color: #1597e0;
+}
+.processes .information .actions a.icon-bug:hover {
+  color: #c19600;
+}
+.processes .information:hover p {
+  background-color: #ebebeb;
+  cursor: pointer;
+}
+.processes .information.reloading p {
+  background-color: #c7e8fa;
+  -webkit-animation: reloading 2.5s linear infinite;
+  -moz-animation: reloading 2.5s linear infinite;
+  -ms-animation: reloading 2.5s linear infinite;
+  -animation: reloading 2.5s linear infinite;
+}
+.processes .information.reloading:hover p {
+  background-color: #c7e8fa;
+}
+.processes .information.erroring p {
+  background-color: #ffcfcc;
+  -webkit-animation: erroring 2.5s linear infinite;
+  -moz-animation: erroring 2.5s linear infinite;
+  -ms-animation: erroring 2.5s linear infinite;
+  -animation: erroring 2.5s linear infinite;
+}
+.processes .information.erroring:hover p {
+  background-color: #ffcfcc;
+}
+.processes .details,
+.processes .logs {
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+  border-radius: 6px;
+  background: #ffffff;
+  padding: 10px;
+}
+.processes .details h3,
+.processes .logs h3 {
+  border-bottom: none;
+}
+.processes .details .executable {
+  font-size: 14px;
+  margin: 10px 0;
+  font-family: Monaco, monospace;
+  color: #bbbbbb;
+}
+.processes .details dl {
+  float: right;
+  margin-top: -19px;
+  font-size: 14px;
+  font-family: 'Abel', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #9b9bad;
+}
+.processes .details dl dt,
+.processes .details dl dd {
+  display: inline-block;
+}
+.processes .details dl dt {
+  width: 10px;
+  height: 0;
+  overflow: hidden;
+  padding-top: 10px;
+  margin-left: 5px;
+}
+.processes .details dl dt.cpu {
+  background: #347fac;
+}
+.processes .details dl dt.memory {
+  background: #49aa3c;
+}
+.processes .details ul {
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+  border-radius: 6px;
+  background: #333;
+  color: #FFF;
+  font-family: 'Lucida Console', Monaco, monospace;
+  height: 400px;
+  margin: 10px 5px 5px 5px;
+  overflow: auto;
+  padding: 5px 0;
+}
+.processes .details ul li {
+  font-size: 12px;
+  background-color: transparent;
+  color: #FFF;
+  line-height: 1.4;
+  white-space: pre;
+  padding: 1px 5px;
+}
+.processes .details ul li.error {
+  background-color: #330100;
+}
+.processes .details ul:after {
+  content: "\2588";
+  margin-left: 5px;
+  -webkit-animation: blinker 1s linear infinite;
+  -moz-animation: blinker 1s linear infinite;
+  -ms-animation: blinker 1s linear infinite;
+  -animation: blinker 1s linear infinite;
+}
+@-moz-keyframes blinker {
+  0% {
+    opacity: 1.0;
+  }
+  50% {
+    opacity: 0.0;
+  }
+  100% {
+    opacity: 1.0;
+  }
+}
+@-webkit-keyframes blinker {
+  0% {
+    opacity: 1.0;
+  }
+  50% {
+    opacity: 0.0;
+  }
+  100% {
+    opacity: 1.0;
+  }
+}
+@keyframes blinker {
+  0% {
+    opacity: 1.0;
+  }
+  50% {
+    opacity: 0.0;
+  }
+  100% {
+    opacity: 1.0;
+  }
+}
+@-moz-keyframes reloading {
+  0% {
+    background: rgba(21, 151, 224, 0.2);
+  }
+  50% {
+    background: rgba(21, 151, 224, 0.05);
+  }
+  100% {
+    background: rgba(21, 151, 224, 0.2);
+  }
+}
+@-webkit-keyframes reloading {
+  0% {
+    background: rgba(21, 151, 224, 0.2);
+  }
+  50% {
+    background: rgba(21, 151, 224, 0.05);
+  }
+  100% {
+    background: rgba(21, 151, 224, 0.2);
+  }
+}
+@keyframes reloading {
+  0% {
+    background: rgba(21, 151, 224, 0.2);
+  }
+  50% {
+    background: rgba(21, 151, 224, 0.05);
+  }
+  100% {
+    background: rgba(21, 151, 224, 0.2);
+  }
+}
+@-moz-keyframes erroring {
+  0% {
+    background: rgba(255, 17, 0, 0.2);
+  }
+  50% {
+    background: rgba(255, 17, 0, 0.05);
+  }
+  100% {
+    background: rgba(255, 17, 0, 0.2);
+  }
+}
+@-webkit-keyframes erroring {
+  0% {
+    background: rgba(255, 17, 0, 0.2);
+  }
+  50% {
+    background: rgba(255, 17, 0, 0.05);
+  }
+  100% {
+    background: rgba(255, 17, 0, 0.2);
+  }
+}
+@keyframes erroring {
+  0% {
+    background: rgba(255, 17, 0, 0.2);
+  }
+  50% {
+    background: rgba(255, 17, 0, 0.05);
+  }
+  100% {
+    background: rgba(255, 17, 0, 0.2);
+  }
+}
+@media only screen and (max-width: 700px) {
+  .system table,
+  .system figure {
+    width: 100%;
+    float: none;
+  }
+}

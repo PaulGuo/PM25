@@ -1,0 +1,9 @@
+{
+  "script" : "./examples/child.js",
+  "error_file" : "errLog.log",
+  "out_file" : "outLog.log",
+  "pid_file" : "child",
+  "instances" : "4",
+  "min_uptime" : "10",
+  "max_restarts" : "4"
+}

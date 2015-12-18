@@ -1,0 +1,17 @@
+{
+    "apps" : [{
+        "name": "PM2.5",
+        "script": "index.js",
+        "log_date_format": "YYYY-MM-DD HH:mm Z",
+        "error_file": "./node-app.stderr.log",
+        "out_file": "./node-app.stdout.log",
+        "instances": "0",
+        "watch": "false",
+        "ignoreWatch": ["[\\/\\\\]\\./", "node_modules"],
+        "merge_logs": true,
+        "exec_mode": "cluster_mode",
+        "env": {
+            "NODE_ENV": "production"
+        }
+    }]
+}

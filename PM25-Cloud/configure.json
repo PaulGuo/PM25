@@ -1,0 +1,16 @@
+{
+    "endpoints": {
+        "web": "https://service.pm25.io:4438",
+        "reverse": "http://service.pm25.io:43554",
+        "push": "http://service.pm25.io:41624"
+    },
+    "ports": {
+        "wss": "8042",
+        "ioswss": "8055"
+    },
+    "passphrase": "",
+    "dbpath": "mongodb://travel-mongodb-pm.vip.yourdomainname.com:28017/pm25",
+    "sessiondbpath": "mongodb://travel-mongodb-pm.vip.yourdomainname.com:28017/pm25-session",
+    "deviceproduction": "",
+    "device": ""
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="pm25">
+<head>
+    <meta charset="UTF-8">
+    <title>PM2.5 | Online Node Service Monitoring</title>
+    <script type="text/javascript" src="/js/vendor/moment-with-locales.js"></script>
+    <script type="text/javascript" src="/js/vendor/angular/angular.js"></script>
+    <script type="text/javascript" src="/js/vendor/angular/angular-cookies.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/controllers/transactionsController.js"></script>
+    <script type="text/javascript" src="/js/filters/timestampFormatFilter.js"></script>
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/bootstrap-3.3.4.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pm25.css">
+    <link rel="icon" type="image/png" href="/img/favicon.png">
+</head>
+<body>
+
+<script type="text/javascript">
+    var __public_key = '${public_key}';
+    var __server_name = '${server_name}';
+</script>
+
+<script type="text/javascript">
+    if(self !== top) {
+        document.write('<style>body { background: none; }</style>');
+    }
+</script>
+
+<article ng-controller="transactionsController">
+    <div class="pm25"><img src="/img/pm25-logo-latest.png" alt=""></div>
+    <h1 hidden>PM2 Process Monitor</h1>
+    <!--pending-->
+    <div class="spinner" ng-if="!transactions.data">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+    </div>
+    <!--empty-->
+    <section class="nothing" ng-if="transactions.data && transactions.data.length === 0">
+        <alert class="alert-error" type="error">No data to display.</alert>
+    </section>
+    <section class="transactions">
+        <h2>{{transactions.data[0].data.server_name}}</h2>
+        <table class="table" ng-show=transactions.data>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Code</th>
+                    <th>Time</th>
+                    <th>URL</th>
+                    <th>Occured</th>
+                    <th>Size</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="transaction in transactions.data">
+                    <td>{{transaction.data.transaction.data.method}}</td>
+                    <td>{{transaction.data.transaction.data.code}}</td>
+                    <td ng-class="{highlight: transaction.data.transaction.data.time > 600, alarm: transaction.data.transaction.data.time > 1000}">{{transaction.data.transaction.data.time}}ms</td>
+                    <td class="url">{{transaction.data.transaction.data.url}}</td>
+                    <td>{{transaction.data.transaction.at | timestampFormat}}</td>
+                    <td>{{transaction.data.transaction.data.size/1000}}k</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</article>
+
+<footer class="ng-scope">
+    <a href="http://pm25.io/docs/">
+        <span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;&nbsp;帮助文档
+    </a>
+    <small class="ng-binding">PM2.5 version 0.143.5</small>
+</footer>
+
+</body>
+</html>

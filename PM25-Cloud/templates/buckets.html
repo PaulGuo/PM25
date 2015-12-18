@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="pm25">
+<head>
+    <meta charset="UTF-8">
+    <title>PM2.5 | Online Node Service Monitoring</title>
+    <script type="text/javascript" src="/js/vendor/moment-with-locales.js"></script>
+    <script type="text/javascript" src="/js/vendor/angular/angular.js"></script>
+    <script type="text/javascript" src="/js/vendor/angular/angular-cookies.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/controllers/bucketsController.js"></script>
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/bootstrap-3.3.4.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pm25.css">
+    <link rel="icon" type="image/png" href="/img/favicon.png">
+</head>
+<body>
+
+<script type="text/javascript">
+    var __uuid = '${uuid}';
+    var __bucket = '${bucket}';
+</script>
+
+<script type="text/javascript">
+    if(self !== top) {
+        document.write('<style>body { background: none; }</style>');
+    }
+</script>
+
+<article ng-controller="bucketsController">
+    <div class="pm25"><img src="/img/pm25-logo-latest.png" alt=""></div>
+    <h1 hidden>PM2 Process Monitor</h1>
+    <section class="buckets">
+        <p class="clearfix">
+            <button type="button" class="btn btn-default pull-right" ng-click="doLogout()" style="margin-left: 5px;">
+                <span class="glyphicon glyphicon-off" aria-hidden="true"></span> 退出登录
+            </button>
+            <button type="button" class="btn btn-default pull-right" ng-click="createNewBucket()">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 立即创建一个新桶
+            </button>
+        </p>
+
+        <div class="list-group">
+        {@each buckets as bucket}
+            <div class="list-group-item bucket-item">
+                <a href="/bucket/${bucket.bucket_name}/${bucket.public_key}">
+                    <h4 class="list-group-item-heading">
+                        <span class="glyphicon glyphicon-paperclip" aria-hidden="true"></span>
+                        Bucket Name: ${bucket.bucket_name}
+                    </h4>
+                    <p class="list-group-item-text">Public key: ${bucket.public_key}</p>
+                </a>
+                <span class="label label-default" contenteditable="true">pm25 interact ${bucket.secret_key} ${bucket.public_key}</span>
+                <span class="label label-info"></span>
+                <span class="label label-success"></span>
+                <div class="operations" ng-click="removeCurrentBucket('${bucket.bucket_name}', '${bucket.public_key}')">
+                    <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                </div>
+            </div>
+        {@/each}
+        </div>
+
+        {@if !buckets || !buckets.length}
+        <div class="alert alert-info" role="alert">
+            此前您还没有创建过桶，现在开始创建你的第一个桶，开始数据之旅吧。
+        </div>
+        {@/if}
+    </section>
+</article>
+
+<footer class="ng-scope">
+    <a href="http://pm25.io/docs/">
+        <span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;&nbsp;帮助文档
+    </a>
+    <small class="ng-binding">PM2.5 version 0.143.5</small>
+</footer>
+
+</body>
+</html>

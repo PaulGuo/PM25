@@ -1,0 +1,267 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>快速上手 &mdash; PM2.5 0.0.128 文档</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PM2.5 0.0.128 文档" href="index.html"/>
+        <link rel="next" title="进阶指南" href="advanced.html"/>
+        <link rel="prev" title="如何安装" href="installation.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> PM2.5
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html"> 简介</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#id2">服务架构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#id3">功能简介</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html"> 如何安装</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#id2">接入指南</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#id3">命令行使用</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href=""> 快速上手</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">创建账号</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">创建新桶</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">部署接入</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">数据查看</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">错误日志</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">监控报警</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ios">iOS客户端</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html"> 进阶指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html#id2">内部实现</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="help.html"> 帮助</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">PM2.5</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>快速上手</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/getting_started.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="id1">
+<h1>快速上手<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id2">
+<h2>创建账号<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p>访问PM25.io，如果此前未注册过账户，可以输入邮箱名称和密码，点击“登录/注册”按钮即可快速创建一个PM2.5监控平台的账号。</p>
+<img alt="_images/login.png" src="_images/login.png" />
+</div>
+<div class="section" id="id3">
+<h2>创建新桶<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<p>登录成功后，点击界面中的“立即创建一个新桶”即可快速创建一个新的“桶”，桶的概念类似分组，旨在将多台不同组别服务器的监控通过“桶”进行聚集并加以区分。</p>
+<img alt="_images/bucket_create_button.png" src="_images/bucket_create_button.png" />
+<p>创建新桶的界面中有两个必填字段：“新桶名称”和“新桶描述”，点击创建即可创建成功，并获得对应的公钥和私钥。</p>
+<img alt="_images/bucket_create.png" src="_images/bucket_create.png" />
+<p>如果此前你的团队成员已经创建了一个桶，并且对方希望你可以查看该桶内服务器的指标和监控，你可以勾选“显示高级选项”，并向对方索取私钥和公钥填写到高级表单项中，这一步操作类似桶的镜像克隆。</p>
+<img alt="_images/bucket_create_mirror.png" src="_images/bucket_create_mirror.png" />
+<p>无论你是通过哪种方式创建的桶，都可以看到类似如下界面，界面中可以看到公钥以及一串命令，这串命令的具体用途可以参考“如何安装”章节中的“接入指南”：</p>
+<img alt="_images/buckets.png" src="_images/buckets.png" />
+</div>
+<div class="section" id="id4">
+<h2>部署接入<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre> npm install -g pm25
+ pm25 interact &lt;secret_key&gt; &lt;public_key&gt;
+ pm25 start processes.json
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>数据查看<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<p>当上述命令操作完成后，便可以在PM2.5中查看到服务的实时数据了，点击对应的桶，即可进入到服务指标的可视化展示界面：</p>
+<img alt="_images/hosts.png" src="_images/hosts.png" />
+</div>
+<div class="section" id="id6">
+<h2>错误日志<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h2>
+<p>如果你看到某个进程中包含错误信息，可以点击该进程，此时会展开当前进程的详细报错信息，方便你对代码中的问题进行定位。</p>
+<img alt="_images/host_exceptions.png" src="_images/host_exceptions.png" />
+</div>
+<div class="section" id="id7">
+<h2>监控报警<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h2>
+<img alt="_images/trigger_create_button.png" src="_images/trigger_create_button.png" />
+<p>如果你希望在服务器进程发生如重启、退出、启动等状态时获得通知，可以通过新建监控报警配置来实现，监控报警配置目前支持的事件有：</p>
+<div class="highlight-bash"><div class="highlight"><pre> event:restart
+ event:delete
+ event:stop
+ event:restart overlimit
+ event:exit
+ event:start
+ event:online
+</pre></div>
+</div>
+<p>监控报警的一个配置示例如下：</p>
+<img alt="_images/trigger_create_example.png" src="_images/trigger_create_example.png" />
+<p>创建完成后监控配置列表如下：</p>
+<img alt="_images/triggers.png" src="_images/triggers.png" />
+<p>截止目前，监控报警配置已经完成，接下来需要做的只是下载iOS客户端登录你的账号，并确保开启了iOS的系统通知，此后在服务发生特定事件的时候，你的iOS客户端或者Apple Watch便可以实时收到消息通知提醒了。</p>
+</div>
+<div class="section" id="ios">
+<h2>iOS客户端<a class="headerlink" href="#ios" title="永久链接至标题">¶</a></h2>
+<p>AppStore下载链接：<a class="reference external" href="http://appsto.re/cn/aRVG7.i">http://appsto.re/cn/aRVG7.i</a></p>
+<img alt="_images/ios_app.png" src="_images/ios_app.png" />
+<img alt="_images/apple_watch_app.png" src="_images/apple_watch_app.png" />
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="advanced.html" class="btn btn-neutral float-right" title="进阶指南" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral" title="如何安装" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2015, GuoKai.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.128',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

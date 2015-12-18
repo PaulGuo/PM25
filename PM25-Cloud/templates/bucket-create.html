@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="pm25">
+<head>
+    <meta charset="UTF-8">
+    <title>PM2.5 | Online Node Service Monitoring</title>
+    <script type="text/javascript" src="/js/vendor/moment-with-locales.js"></script>
+    <script type="text/javascript" src="/js/vendor/angular/angular.js"></script>
+    <script type="text/javascript" src="/js/vendor/angular/angular-cookies.js"></script>
+    <script type="text/javascript" src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/controllers/bucketCreateController.js"></script>
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/bootstrap-3.3.4.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pm25.css">
+    <link rel="icon" type="image/png" href="/img/favicon.png">
+</head>
+<body>
+
+<script type="text/javascript">
+    var __uuid = '${uuid}';
+    var __bucket = '${bucket}';
+</script>
+
+<script type="text/javascript">
+    if(self !== top) {
+        document.write('<style>body { background: none; }</style>');
+    }
+</script>
+
+<article ng-controller="bucketCreateController">
+    <div class="pm25"><img src="/img/pm25-logo-latest.png" alt=""></div>
+    <h1 hidden>PM2 Process Monitor</h1>
+    <section class="bucket-create">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label hidden for="inputBucketName" class="col-sm-2 control-label">新桶名称</label>
+                <div class="col-sm-12">
+                    <input type="text" class="form-control" id="inputBucketName" placeholder="新桶名称" ng-model="bucket_name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label hidden for="inputBucketDescription" class="col-sm-2 control-label">新桶描述</label>
+                <div class="col-sm-12">
+                    <input type="text" class="form-control" id="inputBucketDescription" placeholder="新桶描述" ng-model="bucket_description">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-click="showAdvancedOptions=!showAdvancedOptions"> 显示高级选项（一般情况下请勿勾选）
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="advanced-options" ng-show="showAdvancedOptions==true">
+            <div class="form-group">
+                <label hidden for="inputBucketName" class="col-sm-2 control-label">Secret Key</label>
+                <div class="col-sm-12">
+                    <input type="text" class="form-control" id="inputSecretKey" placeholder="Secret Key" ng-model="secret_key">
+                </div>
+            </div>
+            <div class="form-group">
+                <label hidden for="inputBucketDescription" class="col-sm-2 control-label">Public Key</label>
+                <div class="col-sm-12">
+                    <input type="text" class="form-control" id="inputPublicKey" placeholder="Public Key" ng-model="public_key">
+                </div>
+            </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-0 col-sm-12">
+                    <button type="submit" class="btn btn-default btn-block" ng-click="bucketCreateSubmit()">立即创建新桶</button>
+                </div>
+            </div>
+            <div class="alert alert-danger" role="alert" ng-if="bucketCreateStatus==-1">
+                抱歉，桶名重复，请修改后重新提交。
+            </div>
+        </form>
+    </section>
+</article>
+
+<footer class="ng-scope">
+    <a href="http://pm25.io/docs/">
+        <span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;&nbsp;帮助文档
+    </a>
+    <small class="ng-binding">PM2.5 version 0.143.5</small>
+</footer>
+
+</body>
+</html>

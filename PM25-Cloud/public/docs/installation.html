@@ -1,0 +1,338 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>如何安装 &mdash; PM2.5 0.0.128 文档</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PM2.5 0.0.128 文档" href="index.html"/>
+        <link rel="next" title="快速上手" href="getting_started.html"/>
+        <link rel="prev" title="简介" href="introduction.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> PM2.5
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html"> 简介</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#id2">服务架构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#id3">功能简介</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href=""> 如何安装</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">接入指南</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">命令行使用</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html"> 快速上手</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id2">创建账号</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id3">创建新桶</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id4">部署接入</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id5">数据查看</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id6">错误日志</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id7">监控报警</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#ios">iOS客户端</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html"> 进阶指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html#id2">内部实现</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="help.html"> 帮助</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">PM2.5</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>如何安装</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/installation.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <p>PM2.5 CLI基于PM2，使用方法和API同PM2完全一致，如果你目前正在使用PM2，能够快速无痛的迁移到PM2.5中。如果局部安装需要在当前目录下执行，安装方式完全看你的个人喜好，但我们推荐全局安装的方式。</p>
+<div class="section" id="id1">
+<h1>如何安装<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<p>NPM安装包地址：<a class="reference external" href="https://www.npmjs.com/package/pm25">https://www.npmjs.com/package/pm25</a></p>
+<div class="highlight-bash"><div class="highlight"><pre>npm install -g pm25
+</pre></div>
+</div>
+<div class="section" id="id2">
+<h2>接入指南<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre> npm install -g pm25
+ pm25 interact &lt;secret_key&gt; &lt;public_key&gt;
+ pm25 start processes.json
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>命令行使用<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span class="hll"> Usage: pm25 [cmd] app
+</span>
+ Commands:
+
+     start [options] &lt;file|json|stdin&gt;                          start and daemonize an app
+     deploy &lt;file|environment&gt;                                  deploy your json
+     startOrRestart &lt;json&gt;                                      start or restart JSON file
+     startOrReload &lt;json&gt;                                       start or gracefully reload JSON file
+     startOrGracefulReload &lt;json&gt;                               start or gracefully reload JSON file
+     stop [options] &lt;id|name|all|json|stdin&gt;                    stop a process (to start it again, do pm2 restart &lt;app&gt;)
+     restart [options] &lt;id|name|all|json|stdin&gt;                 restart a process
+     reload &lt;name|all&gt;                                          reload processes (note that its for app using HTTP/HTTPS)
+     gracefulReload &lt;name|all&gt;                                  gracefully reload a process. Send a &quot;shutdown&quot; message to close all connections.
+     delete &lt;name|id|script|all|json|stdin&gt;                     stop and delete a process from pm2 process list
+     sendSignal &lt;signal&gt; &lt;pm2_id|name&gt;                          send a system signal to the target process
+     ping                                                       ping pm2 daemon - if not up it will launch it
+     updatePM2                                                  update in-memory PM2 with local PM2
+     update                                                     (alias) update in-memory PM2 with local PM2
+     install &lt;module|git:/&gt;                                     install or update a module and run it forever
+     uninstall &lt;module&gt;                                         stop and uninstall a module
+     publish                                                    Publish the module you are currently on
+     set &lt;key&gt; &lt;value&gt;                                          sets the specified config &lt;key&gt; &lt;value&gt;
+     unset &lt;key&gt;                                                clears the specified config &lt;key&gt;
+     interact [secret_key|command] [public_key] [machine_name]  linking action to keymetrics.io - command can be stop|info|delete|restart
+     link [secret_key|command] [public_key] [machine_name]      linking action to keymetrics.io - command can be stop|info|delete|restart
+     web                                                        launch an health API on port 9615
+     dump                                                       dump all processes for resurrecting them later
+     save                                                       (alias) dump all processes for resurrecting them later
+     resurrect                                                  resurrect previously dumped processes
+     startup [platform]                                         auto resurrect process at startup. [platform] = ubuntu, centos, redhat, gentoo, systemd, darwin, amazon
+     generate                                                   generate an ecosystem.json configuration file
+     ecosystem                                                  generate an ecosystem.json configuration file
+     reset &lt;name|id|all&gt;                                        reset counters for process
+     describe &lt;id&gt;                                              describe all parameters of a process id
+     desc &lt;id&gt;                                                  (alias) describe all parameters of a process id
+     info &lt;id&gt;                                                  (alias) describe all parameters of a process id
+     show &lt;id&gt;                                                  (alias) describe all parameters of a process id
+     list                                                       list all processes
+     ls                                                         (alias) list all processes
+     l                                                          (alias) list all processes
+     status                                                     (alias) list all processes
+     jlist                                                      list all processes in JSON format
+     prettylist                                                 print json in a prettified JSON
+     monit                                                      launch termcaps monitoring
+     m                                                          (alias) launch termcaps monitoring
+     flush                                                      flush logs
+     reloadLogs                                                 reload all logs
+     logs [options] [id|name]                                   stream logs file. Default stream all logs
+     ilogs                                                      advanced interface to display logs
+     kill                                                       kill daemon
+     pull &lt;name&gt; [commit_id]                                    updates repository for a given app
+     forward &lt;name&gt;                                             updates repository to the next commit for a given app
+     backward &lt;name&gt;                                            downgrades repository to the previous commit for a given app
+     *                                                          undefined
+
+ Options:
+
+     -h, --help                           output usage information
+     -V, --version                        output the version number
+     -v --version                         get version
+     -s --silent                          hide all messages
+     -m --mini-list                       display a compacted list without formatting
+     -f --force                           force actions
+     -n --name &lt;name&gt;                     set a &lt;name&gt; for script
+     -i --instances &lt;number&gt;              launch [number] instances (for networked app)(load balanced)
+     -l --log [path]                      specify entire log file (error and out are both included)
+     -o --output &lt;path&gt;                   specify out log file
+     -e --error &lt;path&gt;                    specify error log file
+     -p --pid &lt;pid&gt;                       specify pid file
+     --max-memory-restart &lt;memory&gt;        specify max memory amount used to autorestart (in megaoctets)
+     --env &lt;environment_name&gt;             specify environment to get specific env variables (for JSON declaration)
+     -x --execute-command                 execute a program using fork system
+     -u --user &lt;username&gt;                 define user when generating startup script
+     -c --cron &lt;cron_pattern&gt;             restart a running process based on a cron pattern
+     -w --write                           write configuration in local folder
+     --interpreter &lt;interpreter&gt;          the interpreter pm2 should use for executing app (bash, python...)
+     --log-date-format &lt;momentjs format&gt;  add custom prefix timestamp to logs
+     --no-daemon                          run pm2 daemon in the foreground if it doesn&#39;t exist already
+     --merge-logs                         merge logs from different instances but keep error and out separated
+     --watch                              watch application folder for changes
+     --ignore-watch &lt;folders|files&gt;       folder/files to be ignored watching, chould be a specific name or regex - e.g. --ignore-watch=&quot;test node_modules &quot;some scripts&quot;&quot;
+     --node-args &lt;node_args&gt;              space delimited arguments to pass to node in cluster mode - e.g. --node-args=&quot;--debug=7001 --trace-deprecation&quot;
+     --no-color                           skip colors
+
+ Basic Examples:
+
+     Start an app using all CPUs available + set a name :
+     $ pm25 start app.js -i max --name &quot;api&quot;
+
+     Restart the previous app launched, by name :
+     $ pm25 restart api
+
+     Stop the app :
+     $ pm25 stop api
+
+     Restart the app that is stopped :
+     $ pm25 restart api
+
+     Remove the app from the process list :
+     $ pm25 delete api
+
+     Kill daemon pm2 :
+     $ pm25 kill
+
+     Update pm2 :
+     $ npm install pm25@latest -g ; pm25 updatePM2
+
+     More examples in https://github.com/PaulGuo/PM2.5#usagefeatures
+
+ Deployment help:
+
+     $ pm25 deploy help
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="快速上手" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="introduction.html" class="btn btn-neutral" title="简介" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2015, GuoKai.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.128',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

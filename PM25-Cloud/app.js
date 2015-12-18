@@ -13,7 +13,7 @@ var rewriteModule = require('http-rewrite-middleware');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var app = express();
-var misauth = require('@mtfe/mis-sso');
+var ssoauth = require('your-ssoauth-middleware');
 var config = require('./configure');
 
 // keep the same rule with nginx rewrite
@@ -60,10 +60,10 @@ app.use(session({
     cookie: { secure: false, httpOnly: false, maxAge: 120 * 60 * 1000 * 100 }
 }));
 
-/// misauth
-app.use(unless('/settoken', misauth({
-    clientId: 'hotelmtafe',
-    clientSecret: '869b57889df39467ba07453d99aa50a0',
+/// ssoauth
+app.use(unless('/settoken', ssoauth({
+    clientId: 'clientId',
+    clientSecret: 'clientSecret',
     redirect: 'server',
     settoken: '/settoken?continue='
 })));

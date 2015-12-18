@@ -14,5 +14,5 @@ source ~/.nvm/nvm.sh
 nvm install 0.12.0
 nvm use 0.12.0
 
-npm --registry=http://r.npm.yourdomainname.com install
+npm --registry=http://registry.cnpmjs.org install
 npm outdated --depth=0

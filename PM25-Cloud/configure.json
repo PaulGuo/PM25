@@ -9,8 +9,8 @@
         "ioswss": "8055"
     },
     "passphrase": "",
-    "dbpath": "mongodb://travel-mongodb-pm.vip.yourdomainname.com:28017/pm25",
-    "sessiondbpath": "mongodb://travel-mongodb-pm.vip.yourdomainname.com:28017/pm25-session",
+    "dbpath": "mongodb://mongodb.yourdomain.com:28017/pm25",
+    "sessiondbpath": "mongodb://mongodb.yourdomain.com:28017/pm25-session",
     "deviceproduction": "",
     "device": ""
 }

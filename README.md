@@ -62,5 +62,5 @@ PM2是一款非常优秀的Node进程管理工具，它有着丰富的特性：�
 
 #### 项目作者的个人背景介绍
 
-郭凯，工作狂、强迫症，崇尚工匠精神，全栈工程师，翻译作品有《编写可维护的JavaScript》、《第三方JavaScript编程》。开源项目有In、Juicer、jSQL、以及开源前端技术社区F2E等。
+郭凯，工作狂、强迫症，崇尚工匠精神，全栈工程师，翻译作品有《编写可维护的JavaScript》、《第三方JavaScript编程》。开源项目有In、Juicer、jSQL、以及开源前端技术社区F2E等，欢迎关注我的[微博](http://weibo.com/janbing)或者[个人博客](http://paulguo.io/)，随时同我进行技术交流。
 

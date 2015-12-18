@@ -1,0 +1,218 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>进阶指南 &mdash; PM2.5 0.0.128 文档</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="PM2.5 0.0.128 文档" href="index.html"/>
+        <link rel="next" title="帮助" href="help.html"/>
+        <link rel="prev" title="快速上手" href="getting_started.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> PM2.5
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html"> 简介</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#id2">服务架构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#id3">功能简介</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html"> 如何安装</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#id2">接入指南</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#id3">命令行使用</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html"> 快速上手</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id2">创建账号</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id3">创建新桶</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id4">部署接入</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id5">数据查看</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id6">错误日志</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#id7">监控报警</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#ios">iOS客户端</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href=""> 进阶指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">内部实现</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="help.html"> 帮助</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">PM2.5</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>进阶指南</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/advanced.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="id1">
+<h1>进阶指南<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id2">
+<h2>内部实现<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p><strong>PM2.5的服务架构</strong></p>
+<p>简单介绍下PM2.5的服务架构：生产环境的Node服务通过PM2.5 CLI进行部署，PM2.5 CLI会持续不断的将Node进程的各项数据上报到PM2.5的云端。云端收到上报的数据后会对原始数据进行处理并存储至MongoDB。而Web端和iOS应用都会通过WebSocket服务从服务端获得实时的数据流，然后通过前端进行可视化的信息展示。</p>
+<img alt="_images/pm25_how_it_works_001.jpg" src="_images/pm25_how_it_works_001.jpg" />
+<p><strong>PM2.5的内部实现</strong></p>
+<p>当Node进程通过PM2.5启动时，PM2.5 CLI会同云端服务进行握手，握手成功后才会源源不断的进行数据的上报。上报时首先会将数据进行AES256加密，然后使用TCP通信将数据上报到服务器，这里用到了开源的Axon，云端服务器收到数据后会将数据入库存储到MongoDB中，同时会进行监控报警的扫描，如果当前数据符合用户订阅的监控报警条件，则会通过云端的Push服务向iOS客户端推送报警信息。云端同时运行WebSocket服务，为多个终端（Web平台、iOS应用）提供实时数据的推送。</p>
+<img alt="_images/pm25_how_it_works_002.jpg" src="_images/pm25_how_it_works_002.jpg" />
+<p>这里值得一提的是，PM2.5的客户端是基于React-Native开发，目前已经提交Apple Store正在审核，审核通过后就可以从Apple Store中下载到了，客户端提供了服务和进程基本指标的查看，同时可以配合Web平台的监控报警设置实现7x24小时对服务的监控。</p>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="help.html" class="btn btn-neutral float-right" title="帮助" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="getting_started.html" class="btn btn-neutral" title="快速上手" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; 版权所有 2015, GuoKai.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.128',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

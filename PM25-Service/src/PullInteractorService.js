@@ -84,8 +84,6 @@ async function insertProcess(msg, secret_key) {
         'data.server_name': msg.data.server_name
     };
 
-    var count = await status.countAsync(query);
-
     // 设置TTL确保数据入库后只保存7天时间
     var ensureTTL = await status.ensureIndexAsync({'created_at': 1}, {expireAfterSeconds: 3600 * 24 * 7});
 

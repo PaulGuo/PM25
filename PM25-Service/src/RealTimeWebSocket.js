@@ -113,14 +113,14 @@ async function askHandler(data) {
 
 function wrapper(ws) {
     ws._emit = function(message, data) {
-        message = message + ':::' + JSON.stringify(data);
+        message = message + ':-:-:' + JSON.stringify(data);
         ws.send(message);
     };
     return ws;
 };
 
 function messageParse(message, command, data) {
-    message = message.split(':::');
+    message = message.split(':-:-:');
     [command, data] = message;
 
     try {

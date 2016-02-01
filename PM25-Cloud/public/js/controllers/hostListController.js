@@ -195,7 +195,7 @@ angular.module('pm25').controller('hostListController', ['$scope', '$filter', '$
     var session_id = decodeURIComponent($cookies['connect.sid']).match(/s\:([^.]+)/im)[1];
     var channel = session_id + ':' + __public_key;
     var ask = function() {
-        socket.send('ask:::' + JSON.stringify({
+        socket.send('ask:-:-:' + JSON.stringify({
             t: new Date().getTime() - __lags,
             public_key: __public_key,
             session_id: session_id
@@ -211,7 +211,7 @@ angular.module('pm25').controller('hostListController', ['$scope', '$filter', '$
     socket.on = (function(channel, handler) {
         var channels = {};
         var messageParse = function(message, data) {
-            message = message.split(':::');
+            message = message.split(':-:-:');
             data = message[1];
             message = message[0];
 
@@ -266,7 +266,7 @@ angular.module('pm25').controller('hostListController', ['$scope', '$filter', '$
 
     $scope.execute = function(server_name, public_key, process_name, method_name, $event) {
         $event.stopPropagation();
-        socket.send('execute:::' + JSON.stringify({
+        socket.send('execute:-:-:' + JSON.stringify({
             machine_name: server_name,
             public_key: public_key,
             method_name: method_name,

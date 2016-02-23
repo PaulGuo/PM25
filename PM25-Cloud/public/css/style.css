@@ -360,6 +360,10 @@ section .logs h3 {
   -ms-animation: blinker 1s linear infinite;
   -animation: blinker 1s linear infinite;
 }
+.processes .profiling {
+  text-align: right;
+  padding: 0 15px 15px;
+}
 @-moz-keyframes blinker {
   0% {
     opacity: 1.0;

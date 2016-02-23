@@ -45,14 +45,27 @@ server = nssocket.createServer(function(socket) {
         this.data(['trigger:pm2:result'], function(data) {
             console.log('trigger:pm2:result');
         });
+
+        this.data(['trigger:action:failure'], function(data) {
+            console.log('trigger:action:failure');
+        });
+
+        this.data(['trigger:action:success'], function(data) {
+            console.log('trigger:action:success');
+        });
     });
 });
 
-rpcServer.expose('execute', function(machine_name, public_key, message, fn) {
+rpcServer.expose('execute', function(machine_name, public_key, message, isCustomAction, fn) {
     var socket_index = machine_name + ':' + public_key;
     var socket = sockets[socket_index].socket;
     var secret_key = sockets[socket_index].secret_key;
     var data = Cipher.cipherMessage(JSON.stringify(message), secret_key);
+
+    if(sockets.hasOwnProperty(socket_index) && isCustomAction) {
+        socket.send('trigger:action', data);
+        return fn(null);
+    }
 
     if(sockets.hasOwnProperty(socket_index)) {
         socket.send('trigger:pm2:action', data);

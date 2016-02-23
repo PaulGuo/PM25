@@ -14,7 +14,11 @@ var wss = new WebSocket.Server({ port: wssPort });
 var rpc = require('axon-rpc');
 var axon = require('axon');
 var req = axon.socket('req');
+var rep = axon.socket('rep');
+var fs = require('fs');
 var rpcClient = new rpc.Client(req);
+var rpcServer = new rpc.Server(rep);
+var profilingsStoreFile = './profilings.json';
 
 async function findOneBucketByQuery(query, bucketsCollection) {
     try {
@@ -107,6 +111,23 @@ async function askHandler(data) {
             console.timeEnd('RealTimeWebSocket:askHandler');
         }
     });
+
+    try {
+        if(!fs.existsSync(profilingsStoreFile)) {
+            return;
+        }
+
+        var profilings = JSON.parse(fs.readFileSync(profilingsStoreFile));
+
+        if(profilings.hasOwnProperty(publicKey)) {
+            socket._emit(`${channelName}:profiling`, profilings[publicKey]);
+            delete profilings[publicKey];
+            fs.writeFileSync(profilingsStoreFile, JSON.stringify(profilings));
+            console.log('RealTimeWebSocket:askHandler:profilingEmit');
+        }
+    } catch (e) {
+        console.error(e.stack || e);
+    }
 }
 
 /* 兼容纯WebSocket */
@@ -140,13 +161,45 @@ function connection(socket) {
         }
 
         if(command === 'execute') {
-            rpcClient.call('execute', data.machine_name, data.public_key, data, function(error) {
+            rpcClient.call('execute', data.machine_name, data.public_key, data, false, function(error) {
+                error && console.error(error);
+            });
+        }
+
+        if(command === 'executeCustomAction') {
+            rpcClient.call('execute', data.machine_name, data.public_key, data, true, function(error) {
                 error && console.error(error);
             });
         }
     });
 };
 
+rpcServer.expose('profiling', function(machine_name, public_key, message, fn, profilings = {}) {
+    console.log('RealTimeWebSocket:askHandler:profiling');
+
+    try {
+        if(fs.existsSync(profilingsStoreFile)) {
+            profilings = JSON.parse(fs.readFileSync(profilingsStoreFile));
+        }
+
+        if(!profilings.hasOwnProperty(public_key)) {
+            profilings[public_key] = {};
+        }
+
+        if(!profilings[public_key].hasOwnProperty(machine_name)) {
+            profilings[public_key][machine_name] = [];
+        }
+
+        profilings[public_key][machine_name].push(message);
+        fs.writeFileSync(profilingsStoreFile, JSON.stringify(profilings));
+        return fn(null);
+    } catch (e) {
+        console.error(e.stack || e);
+    }
+
+    return fn('Profiling Error');
+});
+
 wss.on('connection', connection);
 req.connect(43555);
-
+rep.bind(43666);

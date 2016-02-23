@@ -164,6 +164,21 @@
                         <li ng-repeat="log in host.logs[process.pm_id] track by $index" class="{{log.type}}" ng-bind-html="log.message + ' # ' + (log.at | timestampParse) + '\n' + log.stack | ansiToHtml" />
                     </ul>
                 </div>
+                <div class="profiling" ng-show="showDetails[process.pm_id + host.server_name] && process.axm_actions.length">
+                    <button class="btn btn-default btn-xs" type="button" ng-repeat="axm_action in process.axm_actions" ng-click="executeCustomAction(host.server_name, host.public_key, process.pm_id, axm_action.action_name, undefined, process, axm_action.action_name, $event)">
+                        <span ng-if="axm_action.action_name === 'km:heapdump'">HeapDump</span>
+                        <span ng-if="axm_action.action_name === 'km:cpu:profiling:start'">CPU Profile Start</span>
+                        <span ng-if="axm_action.action_name === 'km:cpu:profiling:stop'">CPU Profile Stop</span>
+                    </button>
+
+                    <button class="btn btn-default btn-xs" type="button" ng-if="process.heapdump" ng-click="downloadFile(process.file_name_heapdump, $event)">
+                        <span>Download Snapshot</span>
+                    </button>
+
+                    <button class="btn btn-default btn-xs" type="button" ng-if="process.cpuprofile" ng-click="downloadFile(process.file_name_cpuprofile, $event)">
+                        <span>Download CPU Profile</span>
+                    </button>
+                </div>
             </article>
         </section>
     </section>

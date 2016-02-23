@@ -11,6 +11,9 @@ var Cipher = require('./Cipher.js');
 var util = require('util');
 var falconService = require('./PushFalconService');
 var dbConnName = 'writeDBConn'; // MongoDB读写线程池分离
+var rpc = require('axon-rpc');
+var req = axon.socket('req');
+var rpcClient = new rpc.Client(req);
 
 async function insertStatusByQuery(query, statusCollection) {
     try {
@@ -116,7 +119,7 @@ async function insertExtendInfo(data, public_key, server_name, collection_name, 
     db && db.close();
 };
 
-async function messageHandler(msg) {
+async function messageHandler(msg, data) {
     try {
         msg = JSON.parse(msg);
     } catch(e) {
@@ -139,11 +142,62 @@ async function messageHandler(msg) {
         return;
     }
 
+    if(data && (msg.heapdump || msg.cpuprofile)) {
+        profilingProcess(msg, data);
+        console.timeEnd('PullInteractorService:messageHandler');
+        db && db.close();
+        return;
+    }
+
     insertProcess(msg, doc.secret_key);
     console.timeEnd('PullInteractorService:messageHandler');
     db && db.close();
 }
 
+function profilingProcess(msg, data) {
+    var path = require('path');
+    var fs = require('fs');
+    var fileName = `${msg.server_name}.${msg.public_key}.${msg.name}.${msg.pm_id}`;
+
+    console.time('PullInteractorService:profilingProcess');
+
+    if(msg.heapdump) {
+        fileName = fileName + '.heapsnapshot';
+    }
+
+    if(msg.cpuprofile) {
+        fileName = fileName + '.cpuprofile';
+    }
+
+    try {
+        if(!fs.existsSync(path.join(process.env.PWD, 'profilings'))) {
+            fs.mkdirSync(path.join(process.env.PWD, 'profilings'));
+        }
+
+        fs.writeFileSync(path.join(process.env.PWD, 'profilings', fileName), data);
+
+        console.log('PullInteractorService:profilingProcess:rpcClient.call');
+        rpcClient.call('profiling', msg.server_name, msg.public_key, {
+            status: 'success',
+            server_name: msg.server_name,
+            public_key: msg.public_key,
+            name: msg.name,
+            pm_id: msg.pm_id,
+            heapdump: msg.heapdump,
+            cpuprofile: msg.cpuprofile,
+            file_name: fileName,
+            timestamp: Date.now()
+        }, function(error) {
+            error && console.error(error);
+        });
+    } catch (e) {
+        console.error(e.stack || e);
+    }
+
+    console.timeEnd('PullInteractorService:profilingProcess');
+}
+
 sock.bind(8080);
 sock.on('message', messageHandler.bind(sock));
 sock.on('process:exception', function() {});
+req.connect(43666);

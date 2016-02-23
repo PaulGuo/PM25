@@ -105,6 +105,16 @@ angular.module('pm25').controller('hostListController', ['$scope', '$filter', '$
         return null;
     };
 
+    HostData.prototype.findProcessByPmId = function(pm_id) {
+        for(var i = 0; i < this.processes.length; i++) {
+            if(this.processes[i].pm_id == pm_id) {
+                return this.processes[i];
+            }
+        }
+
+        return null;
+    };
+
     HostData.prototype.clear = function() {
         this.processes = [];
         this.server = {};
@@ -190,6 +200,34 @@ angular.module('pm25').controller('hostListController', ['$scope', '$filter', '$
         $scope.hostListLength = Object.keys(hostList).length;
     };
 
+    var hostListProfilingProcess = function(hostList, profilings) {
+        for(var hostName in profilings) {
+            if(profilings.hasOwnProperty(hostName)) {
+                var host = hostList[hostName];
+                var targetProcess;
+
+                if(!host) continue;
+
+                profilings[hostName].forEach(function(profiling, index) {
+                    targetProcess = host.findProcessByPmId(profiling.pm_id);
+
+                    if(!targetProcess) return;
+
+                    targetProcess.heapdump = profiling.heapdump;
+                    targetProcess.cpuprofile = profiling.cpuprofile;
+
+                    if(profiling.heapdump) {
+                        targetProcess.file_name_heapdump = profiling.file_name;
+                    }
+
+                    if(profiling.cpuprofile) {
+                        targetProcess.file_name_cpuprofile = profiling.file_name;
+                    }
+                });
+            }
+        }
+    }
+
     var socketOptions = { rememberTransport: false };
     var socket = new WebSocket('ws://service.pm25.io:8042');
     var session_id = decodeURIComponent($cookies['connect.sid']).match(/s\:([^.]+)/im)[1];
@@ -246,6 +284,12 @@ angular.module('pm25').controller('hostListController', ['$scope', '$filter', '$
         setTimeout(ask, 1000);
     });
 
+    socket.on(channel + ':profiling', function(data) {
+        $scope.$apply(function($scope) {
+            hostListProfilingProcess($scope.hostList, data);
+        });
+    });
+
     $scope.showDetails = {};
 
     $scope.toggleDetails = function(pm_id, server_name, pid) {
@@ -274,6 +318,29 @@ angular.module('pm25').controller('hostListController', ['$scope', '$filter', '$
                 name: process_name
             }
         }));
+    };
+
+    $scope.executeCustomAction = function(server_name, public_key, process_id, action_name, opts, processRef, actionName, $event) {
+        $event.stopPropagation();
+        socket.send('executeCustomAction:-:-:' + JSON.stringify({
+            machine_name: server_name,
+            public_key: public_key,
+            process_id: process_id,
+            action_name: action_name,
+            opts: opts
+        }));
+
+        if(actionName.match('heapdump')) {
+            processRef.heapdump = null;
+        }
+
+        if(actionName.match('cpu:profiling')) {
+            processRef.cpuprofile = null;
+        }
+    };
+
+    $scope.downloadFile = function(file_name, $event) {
+        window.open('http://file.service.pm25.yourdomainname.com/' + file_name, '_blank');
     };
 
     $scope.filter = {};

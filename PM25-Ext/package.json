@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "on-finished": "2.3.0",
     "pmx": "^0.5.5"
   }
 }

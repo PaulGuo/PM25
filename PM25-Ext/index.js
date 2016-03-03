@@ -37,7 +37,7 @@ var counter = probe.counter({
 var middleware = function(req, res, next) {
     meter.mark();
     counter.inc();
-    onFinished(req, function() {
+    onFinished(res, function() {
         counter.dec();
     });
     next();

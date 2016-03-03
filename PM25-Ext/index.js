@@ -1,6 +1,7 @@
 /* jshint node: true */
 'use strict';
 
+var onFinished = require('on-finished')
 var pmx = require('pmx');
 var probe = pmx.probe();
 var init = function(options) {
@@ -36,7 +37,7 @@ var counter = probe.counter({
 var middleware = function(req, res, next) {
     meter.mark();
     counter.inc();
-    req.on('end', function() {
+    onFinished(res, function() {
         counter.dec();
     });
     next();

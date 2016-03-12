@@ -1,6 +1,6 @@
 {
   "name": "pm25-ext",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "on-finished": "2.3.0",
-    "pmx": "^0.5.5"
+    "pmx": "^0.6.1"
   }
 }

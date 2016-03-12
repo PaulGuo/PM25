@@ -1,8 +1,8 @@
 /* jshint node: true */
 'use strict';
 
-var onFinished = require('on-finished')
 var pmx = require('pmx');
+var onFinished = require('on-finished');
 var probe = pmx.probe();
 var init = function(options) {
     options = options || {

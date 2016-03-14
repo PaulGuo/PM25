@@ -23,6 +23,10 @@ function pushDataHandler(data, options = undefined) {
         data.monitoring['restart_time'] = 0;
     }
 
+    if(!data.monitoring['pmx_http_latency']) {
+        data.monitoring['pmx_http_latency'] = 0;
+    }
+
     for(var i = 0; i < data.status.data.process.length; i++) {
         var process = data.status.data.process[i];
 
@@ -44,6 +48,11 @@ function pushDataHandler(data, options = undefined) {
                 falcon.gauge('pm25.process.' + process.pm_id + '.current_req_processed', process.axm_monitor['Current req processed'].value, options);
                 data.monitoring['current_req_processed'] = data.monitoring['current_req_processed'] + Number(process.axm_monitor['Current req processed'].value);
             }
+
+            if(process.axm_monitor['pmx:http:latency']) {
+                falcon.gauge('pm25.process.' + process.pm_id + '.pmx_http_latency', parseFloat(process.axm_monitor['pmx:http:latency'].value), options);
+                data.monitoring['pmx_http_latency'] = data.monitoring['pmx_http_latency'] + parseFloat(process.axm_monitor['pmx:http:latency'].value);
+            }
         }
     }
 
@@ -56,6 +65,7 @@ function pushDataHandler(data, options = undefined) {
             .gauge('pm25.monitoring.free_mem', data.monitoring.free_mem, options)
             .gauge('pm25.monitoring.req/sec', data.monitoring['req/sec'], options)
             .gauge('pm25.monitoring.current_req_processed', data.monitoring.current_req_processed, options)
+            .gauge('pm25.monitoring.pmx_http_latency', data.monitoring.pmx_http_latency, options)
             .gauge('pm25.monitoring.restart_time', data.monitoring.restart_time, options);
     }
 

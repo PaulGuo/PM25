@@ -343,6 +343,10 @@ angular.module('pm25').controller('hostListController', ['$scope', '$filter', '$
         window.open('http://file.service.pm25.yourdomainname.com/' + file_name, '_blank');
     };
 
+    $scope.viewSunburstGraph = function(file_name, $event) {
+        window.open('/graph/sunburst/' + file_name, '_blank');
+    };
+
     $scope.filter = {};
 
 }]);

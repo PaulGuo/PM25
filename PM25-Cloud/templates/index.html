@@ -178,6 +178,10 @@
                     <button class="btn btn-default btn-xs" type="button" ng-if="process.cpuprofile" ng-click="downloadFile(process.file_name_cpuprofile, $event)">
                         <span>Download CPU Profile</span>
                     </button>
+
+                    <button class="btn btn-default btn-xs" type="button" ng-if="process.cpuprofile" ng-click="viewSunburstGraph(process.file_name_cpuprofile, $event)">
+                        <span>CPU Sunburst</span>
+                    </button>
                 </div>
             </article>
         </section>

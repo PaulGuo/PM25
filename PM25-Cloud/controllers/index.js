@@ -39,4 +39,10 @@ module.exports = function(router) {
             server_name: req.params.server_name
         });
     });
+
+    router.get('/graph/sunburst/:filename', function(req, res) {
+        res.render('sunburst', {
+            filename: req.params.filename
+        });
+    });
 };

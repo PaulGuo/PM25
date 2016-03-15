@@ -12,6 +12,7 @@
     "babel-preset-stage-0": "^6.1.18",
     "bluebird": "^2.9.24",
     "connect-mongo": "^0.8.0",
+    "cors": "^2.7.1",
     "express": "^4.13.3",
     "mongodb": "^1.4.34",
     "nssocket": "^0.5.3",

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="pm25">
+<head>
+    <meta charset="UTF-8">
+    <title>PM2.5 | Online Node Service Monitoring</title>
+    <script type="text/javascript">
+        var __prefix = 'http://file.service.pm25.yourdomainname.com/plain/';
+        var __filename = '${filename}';
+        var __fileaddress = __prefix + __filename;
+    </script>
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/bootstrap-3.3.4.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pm25.css">
+    <link rel="icon" type="image/png" href="/img/favicon.png">
+</head>
+<body>
+
+<script type="text/javascript">
+    if(self !== top) {
+        document.write('<style>body { background: none; }</style>');
+    }
+</script>
+
+<style type="text/css">
+    path {
+        stroke: #fff;
+        fill-rule: evenodd;
+    }
+
+    .tooltip {
+        font-size: 12px;
+        font-family: Arial, sans-serif;
+    }
+</style>
+
+<article>
+    <div class="pm25"><img src="/img/pm25-logo-latest.png" alt=""></div>
+    <h1 hidden>PM2 Process Monitor</h1>
+    <section id="sunburst" class="graph sunburst">
+    </section>
+</article>
+
+<footer class="ng-scope">
+    <a href="http://pm25.io/docs/">
+        <span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span>&nbsp;&nbsp;帮助文档
+    </a>
+    <small class="ng-binding">PM2.5 version 0.143.5</small>
+</footer>
+
+<script type="text/javascript" src="/js/vendor/d3.min.js"></script>
+<script type="text/javascript" src="/js/sunburst.js"></script>
+
+</body>
+</html>

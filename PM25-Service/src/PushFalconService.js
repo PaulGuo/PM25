@@ -2,7 +2,7 @@
 'use strict';
 
 var Falcon = require('open-falcon').init('http://127.0.0.1:1988/v1/push', 'pm25');
-var falcon = new Falcon({ step: 20 });
+var falcon = new Falcon({ step: 60 });
 
 function pushDataHandler(data, options = undefined) {
     options = {

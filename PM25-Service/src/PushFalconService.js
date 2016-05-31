@@ -3,8 +3,17 @@
 
 var Falcon = require('open-falcon').init('http://127.0.0.1:1988/v1/push', 'pm25');
 var falcon = new Falcon({ step: 60 });
+var NodeCache = require('node-cache');
+var metricsCache = new NodeCache({ stdTTL: 60, checkperiod: 80 });
 
 function pushDataHandler(data, options = undefined) {
+    // 确保一分钟内同一个节点的所有指标只向Falcon上报一次
+    if(metricsCache.get(data.server_name) === true) {
+        return;
+    }
+
+    metricsCache.set(data.server_name, true);
+
     options = {
         type: 'pm25',
         server_name: data.server_name,

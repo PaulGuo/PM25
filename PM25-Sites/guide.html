@@ -1,0 +1,526 @@
+<!DOCTYPE html><html>
+
+<head>
+<meta charset="utf-8">
+<title>文档内容</title>
+<style type="text/css">
+body {
+  font-family: Helvetica, arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: white;
+  padding: 30px; }
+
+body > *:first-child {
+  margin-top: 0 !important; }
+body > *:last-child {
+  margin-bottom: 0 !important; }
+
+a {
+  color: #4183C4; }
+a.absent {
+  color: #cc0000; }
+a.anchor {
+  display: block;
+  padding-left: 30px;
+  margin-left: -30px;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 20px 0 10px;
+  padding: 0;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+  cursor: text;
+  position: relative; }
+
+h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA09pVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoMTMuMCAyMDEyMDMwNS5tLjQxNSAyMDEyLzAzLzA1OjIxOjAwOjAwKSAgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUM2NjlDQjI4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUM2NjlDQjM4ODBGMTFFMTg1ODlEODNERDJBRjUwQTQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5QzY2OUNCMDg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5QzY2OUNCMTg4MEYxMUUxODU4OUQ4M0REMkFGNTBBNCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PsQhXeAAAABfSURBVHjaYvz//z8DJYCRUgMYQAbAMBQIAvEqkBQWXI6sHqwHiwG70TTBxGaiWwjCTGgOUgJiF1J8wMRAIUA34B4Q76HUBelAfJYSA0CuMIEaRP8wGIkGMA54bgQIMACAmkXJi0hKJQAAAABJRU5ErkJggg==) no-repeat 10px center;
+  text-decoration: none; }
+
+h1 tt, h1 code {
+  font-size: inherit; }
+
+h2 tt, h2 code {
+  font-size: inherit; }
+
+h3 tt, h3 code {
+  font-size: inherit; }
+
+h4 tt, h4 code {
+  font-size: inherit; }
+
+h5 tt, h5 code {
+  font-size: inherit; }
+
+h6 tt, h6 code {
+  font-size: inherit; }
+
+h1 {
+  font-size: 28px;
+  color: black; }
+
+h2 {
+  font-size: 24px;
+  border-bottom: 1px solid #cccccc;
+  color: black; }
+
+h3 {
+  font-size: 18px; }
+
+h4 {
+  font-size: 16px; }
+
+h5 {
+  font-size: 14px; }
+
+h6 {
+  color: #777777;
+  font-size: 14px; }
+
+p, blockquote, ul, ol, dl, li, table, pre {
+  margin: 15px 0; }
+
+hr {
+  background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC) repeat-x 0 0;
+  border: 0 none;
+  color: #cccccc;
+  height: 4px;
+  padding: 0;
+}
+
+body > h2:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+body > h1:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+  body > h1:first-child + h2 {
+    margin-top: 0;
+    padding-top: 0; }
+body > h3:first-child, body > h4:first-child, body > h5:first-child, body > h6:first-child {
+  margin-top: 0;
+  padding-top: 0; }
+
+a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+  margin-top: 0;
+  padding-top: 0; }
+
+h1 p, h2 p, h3 p, h4 p, h5 p, h6 p {
+  margin-top: 0; }
+
+li p.first {
+  display: inline-block; }
+li {
+  margin: 0; }
+ul, ol {
+  padding-left: 30px; }
+
+ul :first-child, ol :first-child {
+  margin-top: 0; }
+
+dl {
+  padding: 0; }
+  dl dt {
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    padding: 0;
+    margin: 15px 0 5px; }
+    dl dt:first-child {
+      padding: 0; }
+    dl dt > :first-child {
+      margin-top: 0; }
+    dl dt > :last-child {
+      margin-bottom: 0; }
+  dl dd {
+    margin: 0 0 15px;
+    padding: 0 15px; }
+    dl dd > :first-child {
+      margin-top: 0; }
+    dl dd > :last-child {
+      margin-bottom: 0; }
+
+blockquote {
+  border-left: 4px solid #dddddd;
+  padding: 0 15px;
+  color: #777777; }
+  blockquote > :first-child {
+    margin-top: 0; }
+  blockquote > :last-child {
+    margin-bottom: 0; }
+
+table {
+  padding: 0;border-collapse: collapse; }
+  table tr {
+    border-top: 1px solid #cccccc;
+    background-color: white;
+    margin: 0;
+    padding: 0; }
+    table tr:nth-child(2n) {
+      background-color: #f8f8f8; }
+    table tr th {
+      font-weight: bold;
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr td {
+      border: 1px solid #cccccc;
+      margin: 0;
+      padding: 6px 13px; }
+    table tr th :first-child, table tr td :first-child {
+      margin-top: 0; }
+    table tr th :last-child, table tr td :last-child {
+      margin-bottom: 0; }
+
+img {
+  max-width: 100%; }
+
+span.frame {
+  display: block;
+  overflow: hidden; }
+  span.frame > span {
+    border: 1px solid #dddddd;
+    display: block;
+    float: left;
+    overflow: hidden;
+    margin: 13px 0 0;
+    padding: 7px;
+    width: auto; }
+  span.frame span img {
+    display: block;
+    float: left; }
+  span.frame span span {
+    clear: both;
+    color: #333333;
+    display: block;
+    padding: 5px 0 0; }
+span.align-center {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-center > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: center; }
+  span.align-center span img {
+    margin: 0 auto;
+    text-align: center; }
+span.align-right {
+  display: block;
+  overflow: hidden;
+  clear: both; }
+  span.align-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px 0 0;
+    text-align: right; }
+  span.align-right span img {
+    margin: 0;
+    text-align: right; }
+span.float-left {
+  display: block;
+  margin-right: 13px;
+  overflow: hidden;
+  float: left; }
+  span.float-left span {
+    margin: 13px 0 0; }
+span.float-right {
+  display: block;
+  margin-left: 13px;
+  overflow: hidden;
+  float: right; }
+  span.float-right > span {
+    display: block;
+    overflow: hidden;
+    margin: 13px auto 0;
+    text-align: right; }
+
+code, tt {
+  margin: 0 2px;
+  padding: 0 5px;
+  white-space: nowrap;
+  border: 1px solid #eaeaea;
+  background-color: #f8f8f8;
+  border-radius: 3px; }
+
+pre code {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+  border: none;
+  background: transparent; }
+
+.highlight pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+
+pre {
+  background-color: #f8f8f8;
+  border: 1px solid #cccccc;
+  font-size: 13px;
+  line-height: 19px;
+  overflow: auto;
+  padding: 6px 10px;
+  border-radius: 3px; }
+  pre code, pre tt {
+    background-color: transparent;
+    border: none; }
+
+sup {
+    font-size: 0.83em;
+    vertical-align: super;
+    line-height: 0;
+}
+* {
+	-webkit-print-color-adjust: exact;
+}
+@media screen and (min-width: 914px) {
+    body {
+        width: 854px;
+        margin:0 auto;
+    }
+}
+@media print {
+	table, pre {
+		page-break-inside: avoid;
+	}
+	pre {
+		word-wrap: break-word;
+	}
+}
+</style>
+</head>
+<body>
+<h2 id="toc_0">PM25系统使用说明</h2>
+
+<h3 id="toc_1">系统介绍</h3>
+
+<p>无论生产环境还是非生产环境，PM2都是一个强大的Node进程管理工具。它包含了一些简单的功能，诸如源码发生改变后自动重启进程，以便节省开发时间。也包含一些高级特性，比如支持多核处理器的负载均衡，可以在不影响用户的情况下<em>优雅</em>的重启应用，还为更好的使用Node提供了一些其它重要的功能。</p>
+
+<p>PM25基于PM2二次封装，PM25是PM2的超集并无缝兼容PM2的所有功能。拥有PM25，你将拥有更多的进程监控管理的能力（可以通过云端界面实时查看和管理各个主机的进程状态，可以配置报警策略，可以可视化的查看进程的历史数据），当然这一切功能都完全免费且易于使用，强烈推荐您使用PM25替代PM2。</p>
+
+<h4 id="toc_2">使用PM25的优势</h4>
+
+<table>
+<thead>
+<tr>
+<th>-</th>
+<th>PM25</th>
+<th>Keymetrics.io</th>
+<th>OneAPM</th>
+<th>StrongLoop</th>
+<th>Alinode</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><strong>Pros</strong></td>
+<td>免费、开源，内部搭建，安全可靠</td>
+<td>官方维护</td>
+<td>-</td>
+<td>-</td>
+<td>内核级、无需安装额外工具</td>
+</tr>
+<tr>
+<td><strong>Cons</strong></td>
+<td>-</td>
+<td>收费、闭源</td>
+<td>收费、闭源</td>
+<td>收费、闭源</td>
+<td>升级维护有风险</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="toc_3">接入指南</h3>
+
+<p>具体安装方式完全看你的个人喜好，你可以选择全局安装也可以选择局部安装，推荐全局安装的方式。</p>
+
+<pre><code>npm install -g pm25</code></pre>
+
+<p>安装后便可以使用PM25启动你的应用，在启动之前需要首先执行<code>interact</code>命令配置公钥和私钥（<em>公钥和私钥可以通过云端界面进行注册和申请</em>），以便终端能够同云端服务器进行通信，配置完成后即可正常启动你的服务（PM25支持通过JSON方式配置应用，这也是最为推荐的做法）：</p>
+
+<pre><code>pm25 interact &lt;secret_key&gt; &lt;public_key&gt;
+pm25 start processes.json</code></pre>
+
+<h3 id="toc_4">云端监控系统使用说明</h3>
+
+<h4 id="toc_5">全新接入PM25监控系统</h4>
+
+<p><img src="http://ww3.sinaimg.cn/large/62755f82jw1f4gv5oerfhj20l704ugmb.jpg" alt=""></p>
+
+<p>如果你是第一次接入并使用<a href="http://pm25.yourdomainname.com">PM25</a>，需要首先创建一个桶，分桶相当于分组，每个桶会分配一个唯一的公钥和私钥。创建分桶很简单，只需要点击“立即创建一个新桶”按钮，然后分别填写“桶名”和对应的“描述”，提交后便可创建成功。创建成功后便可以在列表页面看到你的分桶信息（包含公钥和私钥，如上图所示）。</p>
+
+<h4 id="toc_6">服务此前已经被接入</h4>
+
+<p>如果你的服务之前已经接入了PM25监控系统，但在云端管理界面还看不到服务的信息，只需要点击“立即创建一个新桶”，然后点击“显示高级选项”，和全新接入不同的是你需要填写服务已有的公钥和私钥，这样提交后会创建一个“镜像桶”（镜像桶并非全新创建一个分桶，镜像桶适合一个团队中多人同时监管一个分组的场景）。</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/62755f82jw1f4gvkqhpe4j20l40813z1.jpg" alt=""></p>
+
+<h4 id="toc_7">实时监控系统的功能概述</h4>
+
+<p>云端管理系统功能主要包括：服务器分桶管理、进程管理、服务器和进程的指标查看、远程控制、慢路由信息、生成堆内存快照、生成CPU分析文件。</p>
+
+<p><strong>注意：</strong> 其中生成堆内存快照、生成CPU分析文件以及进程维度中TPS信息查看的功能，均需要引入扩展包后才能使用（具体细节可以参考文档后续内容中“进阶指南”部分）。</p>
+
+<h4 id="toc_8">服务器及进程信息查看</h4>
+
+<p>分桶创建成功后，即可点击查看当前分桶所包含的所有服务器及进程信息，包括但不限于：主机名称、启动的进程数、CPU数、负载情况、启动时长、内存使用情况，进程维度包括：进程列表、进程名、重启次数、启动时长、进程状态、占用的内存、错误情况、TPS信息，同时可以远程操作进程进行重启和重新载入（如下图所示）。</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/62755f82jw1f4gvvwhbr0j20kp0r647r.jpg" alt=""></p>
+
+<h4 id="toc_9">慢路由信息查看</h4>
+
+<p>如果你要查看某台服务器的慢路由信息，只需要点击主机名右侧的“小图标”，即可查看当前服务器的慢路由列表，其中玫红色部分为超过1000ms的请求，黄色部分为超过600ms的请求，黑色部分为600ms以下的请求，通常情况下玫红色和黄色部分均可以关注是否有提升优化控件。</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/62755f82jw1f4gwa31bepj20l1170akq.jpg" alt=""></p>
+
+<h4 id="toc_10">生成堆内存快照和CPU分析文件</h4>
+
+<p>当你的应用遭遇内存泄露或者CPU飙高的问题时，往往需要针对某个进程生成堆内存快照和CPU分析文件以便进一步进行分析和定位。使用很简单，只需要点击展开对应的进程，然后点击“HeapDump”按钮即可开始生成堆内存快照，当堆内存快照生成完毕后，你会看到“Download Snapshot”按钮，点击即可下载到本地。类似的，你可以点击“CPU Profile Start”按钮开始生成CPU分析文件，当一段时间后可以点击“CPU Profile Stop”按钮停止，之后你会看到“Download CPU Profile”、“CPU Sunburst”两个按钮，前者点击后可以将分析文件下载到本地，后者可以在线查看分析时间段内CPU的Sunburst图表。</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/62755f82jw1f4gwmaunorj20em013dfv.jpg" alt=""></p>
+
+<p><img src="http://ww2.sinaimg.cn/large/62755f82jw1f4gwmrsg7uj205p0cgglr.jpg" alt=""></p>
+
+<h4 id="toc_11">历史图表数据查看</h4>
+
+<p>PM25的底层数据已经和Falcon打通（核心指标会同步上报到Falcon），因此主机和进程维度的历史信息图表均可以通过<a href="http://d.falcon.yourdomainname.com/">Falcon Dashboard</a>进行检索和查看。</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/62755f82jw1f4gwyczwehj213o13n7gw.jpg" alt=""></p>
+
+<p>如果你需要查看某个PM25指标的历史数据，只需要在Dashboard界面搜索并勾选目标主机，然后筛选包含<code>pm25</code>的Counter并选择你需要的指标进行查看即可。</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/62755f82jw1f4gx1peqw6j20vm0anq7k.jpg" alt=""></p>
+
+<h3 id="toc_12">报警系统配置和使用说明</h3>
+
+<p>PM25的报警配置也是基于Falcon，因此和其它Falcon报警项的配置步骤一样，首先打开<a href="http://ops.yourdomainname.com/srvset/">服务树</a>，然后在左侧选择对应的服务树节点，之后在右侧的“监控管理”模块下可以配置和绑定当前应用的监控模板。</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/62755f82jw1f4gxh14fblj20wf0990v9.jpg" alt=""></p>
+
+<p>如果此前没有创建过模板，也可以点击“创建”按钮开始创建第一个报警模板：</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/62755f82jw1f4gxj0ormyj20tn0x87be.jpg" alt=""></p>
+
+<p>当一切配置妥当后，如果你的服务出现了异常且满足报警条件，就会同时收到大象和短信的报警信息了。</p>
+
+<h3 id="toc_13">进阶指南</h3>
+
+<h4 id="toc_14">扩展包的功能介绍和接入方式</h4>
+
+<p>扩展包是在基础功能之上补充，生成堆内存快照、生成CPU分析文件以及进程维度中TPS信息查看的功能，均需要引入扩展包后才能使用，如果你有这些功能的使用需求，可以按照如下方式在你的应用中引入扩展包并加载中间件（以Express应用为例）：</p>
+
+<pre><code>var pm25ext = require(&#39;pm25-ext&#39;).init();
+var express = require(&#39;express&#39;);
+var app = express();
+
+app.use(pm25ext.middleware);</code></pre>
+
+<p><strong>注意：</strong> 值得一提的是，扩展包的引入和初始化务必要在应用加载前完成，否则扩展包功能无效。</p>
+
+<h4 id="toc_15">PM25提供的周边工具包</h4>
+
+<h5 id="toc_16">GC状态统计上报</h5>
+
+<p>如果你需要分析应用的GC状态，可以安装GC状态统计扩展中间件：</p>
+
+<pre><code>npm install --save express-gcstats</code></pre>
+
+<p>并在应用中加载即可：</p>
+
+<pre><code>var express = require(&#39;express&#39;);
+var app = express();
+var gcstats = require(&#39;express-gcstats&#39;);</code></pre>
+
+<p>之后便可以通过Falcon Dashboard筛选查看对应的指标数据了：</p>
+
+<p><img src="http://ww4.sinaimg.cn/large/62755f82jw1f4gy1tlf2cj20qf0mxgrb.jpg" alt=""></p>
+
+<p><img src="http://ww4.sinaimg.cn/large/62755f82jw1f4gy44kgktj20vj0ghdqd.jpg" alt=""></p>
+
+<h5 id="toc_17">进程守护脚本</h5>
+
+<p>当然风险无处不在，我们的进程也可能会遭遇到许多异常情况（比如挂掉重启、CPU彪满导致无法响应），其中CPU彪满是最为棘手的情况，这种情况下进程甚至无法响应云端管理界面下发的远程控制指令，更无法生成CPU的分析文件，因此针对这种场景我们需要在应用内部植入一个守护脚本，起到预警和自我控制的作用。</p>
+
+<pre><code>npm install --save v8-perf-shield</code></pre>
+
+<p>安装很简单，之后需要在应用中加载并进行简单的配置，具体使用说明可以参照<a href="https://github.com/PaulGuo/v8-perf-shield">官方文档</a>：</p>
+
+<pre><code>var express = require(&#39;express&#39;);
+var app = express();
+var pm25 = require(&#39;pm25&#39;);
+var perfShield = require(&#39;v8-perf-shield&#39;);
+
+var restart = function () {
+    pm25.connect(function cb () {
+        pm25.restart(&#39;processes.json&#39;, function () {
+            console.log(&#39;restarted&#39;);
+        });
+    });
+};
+
+perfShield({
+    logsPath: &#39;/opt/logs/logs/&#39;,    // 分析文件保存路径，默认为当前路径
+    samplingTime: 60,                   // 采样时间，用于CPU Profile的生成
+    flushTime: 3,                       // 检查时间，用于定期检查系统用量
+    cacheMaxLimit: 100,                 // 最大历史缓存条数，超过则滚动
+    usageOptions: { keepHistory: true },
+
+    emergencyCondition: function (lastUsage, currentUsage, usageHistory) {
+        return lastUsage.cpu &gt; 50 &amp;&amp; currentUsage.cpu &gt; 50;
+    },
+
+    emergencyAction: function (usageHistory) {
+        console.log(usageHistory);
+        restart();
+    }
+});</code></pre>
+
+<h3 id="toc_18">如何参与贡献代码</h3>
+
+<p>代码托管于<a href="https://github.com/PaulGuo/PM25">Github</a>，项目地址为<a href="http://pm25.io">PM25.io</a>，欢迎大家能够参与进来一起进行共建，一方面服务好自身，一方面能够服务于整个行业。</p>
+
+<h4 id="toc_19">开源代码的组成结构</h4>
+
+<pre><code>├── PM2.5-Cli           // PM25 CLI
+├── PM2.5-Cloud         // PM25 云端控制台
+├── PM2.5-Service       // PM25 服务端代码
+├── PM2.5-Docs          // PM25 文档
+└── PM2.5-Ext           // PM25 扩展包</code></pre>
+
+<h4 id="toc_20">数据库组成和分表结构</h4>
+
+<pre><code>├── pm25                // 主库，用于监控主机的信息存储
+│   ├── buckets         // 桶表，用于存储主机分桶信息
+│   ├── events          // 事件表，用于存储主机的事件信息
+│   ├── exceptions      // 错误异常表，用于存储主机的线上报错
+│   ├── monitorings     // 监控信息表，用于存储主机的整体监控数据
+│   ├── status          // 主表，用于存储主机的各个进程数据
+│   └── transactions    // 网络传输表，用于存储慢路由相关信息
+├── pm25-session        // 会话信息库，用于存储SSO登录后的用户会话
+│   └── sessions        // 会话信息主表，用于存储用户会话详情
+├── pm25-test           // 测试表，用于开发过程中的测试</code></pre>
+
+<h4 id="toc_21">部署拓扑图</h4>
+
+<p><img src="http://ww1.sinaimg.cn/large/62755f82jw1ez3ueeghpvj20hu0g0acc.jpg" alt=""></p>
+
+
+</body>
+
+</html>

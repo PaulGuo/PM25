@@ -1,3 +1,8 @@
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
 var util    = require('util');
 
 /**
@@ -21,7 +26,7 @@ var Config = module.exports = {
       return this._schema;
     }
     // Render aliases.
-    this._schema = require('../schema');
+    this._schema = require('../API/schema');
     for (var k in this._schema) {
       if (k.indexOf('\\') > 0) {
         continue;
@@ -34,7 +39,15 @@ var Config = module.exports = {
           return n;
         }).join('')
       ];
-      this._schema[k].alias && aliases.splice(0, 0, this._schema[k].alias);
+
+      if (this._schema[k].alias && Array.isArray(this._schema[k].alias)) {
+        // If multiple aliases, merge
+        this._schema[k].alias.forEach(function(alias) {
+          aliases.splice(0, 0, alias);
+        });
+      }
+      else if (this._schema[k].alias)
+        aliases.splice(0, 0, this._schema[k].alias);
 
       this._schema[k].alias = aliases;
     }
@@ -53,7 +66,9 @@ Config.transCMDToConf = function(cmd){
   for(var k in defines){
     var aliases = defines[k].alias;
     aliases && aliases.forEach(function(alias){
-      conf[k] || (conf[k] = cmd[alias]);
+      //if (cmd[alias]) {
+        conf[k] || (conf[k] = cmd[alias]);
+      //}
     });
   }
   return conf;
@@ -64,19 +79,26 @@ Config.transCMDToConf = function(cmd){
  * @param {Object} json
  * @returns {{errors: Array, config: {}}}
  */
-Config.verifyJSON = function(json){
+Config.validateJSON = function(json){
   // clone config
   var conf = util._extend({}, json),
       res = {};
   this._errors = [];
 
   var regexKeys = {}, defines = this.schema;
+
   for (var sk in defines) {
     // Pick up RegExp keys.
     if (sk.indexOf('\\') >= 0) {
       regexKeys[sk] = false;
       continue;
     }
+
+    var aliases = defines[sk].alias;
+
+    aliases && aliases.forEach(function(alias){
+      conf[sk] || (conf[sk] = json[alias]);
+    })
 
     var val = conf[sk];
     delete conf[sk];
@@ -85,6 +107,11 @@ Config.verifyJSON = function(json){
     if (val === undefined ||
         val === null ||
         ((val = this._valid(sk, val)) === null)) {
+
+      // If value is not defined
+      // Set default value (via schema.json)
+      if (typeof(defines[sk].default) !== 'undefined')
+        res[sk] = defines[sk].default;
       continue;
     }
     //console.log(sk, val, val === null, val === undefined);

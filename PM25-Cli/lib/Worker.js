@@ -1,3 +1,8 @@
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
 var vizion = require('vizion');
 var cst    = require('../constants.js');
 var async  = require('async');
@@ -25,25 +30,12 @@ module.exports = function(God) {
 
     if (proc_key.monit.memory !== undefined &&
         proc.pm2_env.max_memory_restart !== undefined &&
-        proc.pm2_env.max_memory_restart < proc_key.monit.memory) {
-      console.log('[PM2][WORKER] Process %s restarted because it exceeds --max-memory-restart value',
-                  proc.pm2_env.pm_id);
-      God.softReloadProcessId(proc.pm2_env.pm_id, function(err, data) {
-        if (err)
-          console.error(err.stack || err);
-        return cb();
-      });
-    }
-    else if (proc.pm2_env.status !== undefined &&
-             proc_key.monit.memory !== undefined &&
-             proc.pm2_env.status === cst.ONLINE_STATUS &&
-             proc_key.monit.memory === 0 &&
-             proc.pm2_env.exec_mode != 'fork_mode') {
-      console.log('[PM2][WORKER] Process %s restarted because it uses 0 memory and has ONLINE status',
-                  proc.pm2_env.pm_id);
-      God.restartProcessId({
-        id: proc.pm2_env.pm_id,
-        env: proc.pm2_env.env
+        proc.pm2_env.max_memory_restart < proc_key.monit.memory &&
+        proc.pm2_env.axm_options &&
+        proc.pm2_env.axm_options.pid === undefined) {
+      console.log('[PM2][WORKER] Process %s restarted because it exceeds --max-memory-restart value (current_memory=%s max_memory_limit=%s [octets])', proc.pm2_env.pm_id, proc_key.monit.memory, proc.pm2_env.max_memory_restart);
+      God.softReloadProcessId({
+        id : proc.pm2_env.pm_id
       }, function(err, data) {
         if (err)
           console.error(err.stack || err);
@@ -59,7 +51,7 @@ module.exports = function(God) {
     var proc = _getProcessById(proc_key.pm2_env.pm_id);
     if (!(proc &&
           proc.pm2_env &&
-          proc.pm2_env.vizion !== false &&
+          (proc.pm2_env.vizion !== false && proc.pm2_env.vizion != "false") &&
           proc.pm2_env.versioning &&
           proc.pm2_env.versioning.repo_path)) {
       return cb();
@@ -106,8 +98,6 @@ module.exports = function(God) {
     }
     God.Worker.is_running = true;
 
-    God.forceGc();
-
     God.getMonitorData(null, function(err, data) {
       if (err || !data || typeof(data) !== 'object') {
         God.Worker.is_running = false;
@@ -149,7 +139,6 @@ module.exports = function(God) {
 
 
   God.Worker.start = function() {
-    console.log('[PM2][WORKER] Started with refreshing interval: '+cst.WORKER_INTERVAL);
     timer = setInterval(wrappedTasks, cst.WORKER_INTERVAL);
   };
 

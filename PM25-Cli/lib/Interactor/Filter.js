@@ -1,3 +1,14 @@
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
+
+/**
+ * @file Filter process and system data to be sent to server
+ * @author Alexandre Strzelewicz <strzelewicz.alexandre@gmail.com>
+ * @project Interface
+ */
 
 var os     = require('os');
 
@@ -47,18 +58,14 @@ Filter.status = function(processes, conf) {
         axm_actions       : proc.pm2_env.axm_actions || [],
         axm_monitor       : proc.pm2_env.axm_monitor || {},
         axm_options       : proc.pm2_env.axm_options || {},
-        axm_dynamic       : proc.pm2_env.dynamic     || {},
-
-        command           : proc.pm2_env.command || {}
+        axm_dynamic       : proc.pm2_env.dynamic     || {}
       });
   });
 
   var node_version = process.version || '';
 
   if (node_version != '') {
-    if (node_version.indexOf('v0.') === 0)
-      node_version = 'Node.js ' + node_version;
-    else
+    if (node_version.indexOf('v1.') === 0 || node_version.indexOf('v2.') === 0 || node_version.indexOf('v3.') === 0)
       node_version = 'iojs ' + node_version;
   }
 

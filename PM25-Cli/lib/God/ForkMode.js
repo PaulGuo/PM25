@@ -1,3 +1,8 @@
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
 'use strict';
 
 /**
@@ -5,12 +10,10 @@
  * @author Alexandre Strzelewicz <as@unitech.io>
  * @project PM2
  */
-
-var log           = require('debug')('pm2:god');
+var log           = require('debug')('pm2:fork_mode');
 var fs            = require('fs');
 var cst           = require('../../constants.js');
 var moment        = require('moment');
-var Common        = require('../Common');
 var Utility       = require('../Utility.js');
 var path          = require('path');
 
@@ -96,13 +99,12 @@ module.exports = function ForkMode(God) {
         });
       } catch(e) {
         God.logAndGenerateError(e);
-        if (cb) return cb(e);
+        return cb(e);
       }
 
       cspr.process = {};
       cspr.process.pid = cspr.pid;
       cspr.pm2_env = pm2_env;
-      cspr.pm2_env.status = cst.ONLINE_STATUS;
 
       cspr.stderr.on('data', function forkErrData(data) {
         var log_data = data.toString();
@@ -166,7 +168,27 @@ module.exports = function ForkMode(God) {
           });
         }
         else {
-          return God.bus.emit('process:msg', msg);
+
+          if (typeof msg == 'object' && 'node_version' in msg) {
+            cspr.pm2_env.node_version = msg.node_version;
+            return false;
+          } else if (typeof msg == 'object' && 'cron_restart' in msg) {
+            // cron onTick is invoked in the process
+            return God.restartProcessId({
+              id : cspr.pm2_env.pm_id
+            }, function() {
+              console.log('Application %s has been restarted via CRON', cspr.pm2_env.name);
+            });
+          }
+
+          return God.bus.emit('process:msg', {
+            at      : Utility.getDate(),
+            raw     : msg,
+            process :  {
+              pm_id      : cspr.pm2_env.pm_id,
+              name       : cspr.pm2_env.name
+            }
+          });
         }
       });
 
@@ -200,8 +222,7 @@ module.exports = function ForkMode(God) {
 
       cspr.unref();
 
-      if (cb) return cb(null, cspr);
-      return false;
+      return cb(null, cspr);
     });
 
   };

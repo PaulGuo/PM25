@@ -1,7 +1,7 @@
 {
   "name": "pm25",
-  "preferGlobal": "true",
-  "version": "0.143.5",
+  "preferGlobal": true,
+  "version": "2.3.0",
   "engines": {
     "node": ">=0.10"
   },
@@ -31,7 +31,7 @@
   "description": "Production process manager for Node.JS applications with a built-in load balancer.",
   "main": "index.js",
   "scripts": {
-    "test": "PM2_CONCURRENT_ACTIONS=1 NODE_ENV=test bash test/pm2_programmatic_tests.sh && NODE_ENV=test bash test/pm2_behavior_tests.sh"
+    "test": "NODE_ENV=test bash test/pm2_programmatic_tests.sh && NODE_ENV=test bash test/pm2_behavior_tests.sh"
   },
   "keywords": [
     "cli",
@@ -52,6 +52,8 @@
     "node-pm2",
     "production",
     "keymetrics",
+    "node.js monitoring",
+    "strong-pm",
     "deploy",
     "deployment",
     "daemon",
@@ -63,6 +65,8 @@
     "monitoring",
     "process manager",
     "forever",
+    "profiling",
+    "probes",
     "forever-monitor",
     "keep process alive",
     "process configuration",
@@ -75,44 +79,42 @@
   ],
   "bin": {
     "pm25": "./bin/pm2",
-    "pm25-dev": "./bin/pm2-dev"
+    "rundev": "./bin/rundev",
+    "pm25-dev": "./bin/pm2-dev",
+    "pm25-docker": "./bin/pm2-docker"
   },
   "dependencies": {
-    "async": "1.2.1",
-    "chalk": "1.0.0",
-    "chokidar": "^1.0.0",
+    "async": "1.5",
+    "chalk": "^1.1",
+    "chokidar": "^1.6.1",
     "cli-table": "0.3.1",
-    "coffee-script": "1.9.3",
-    "colors": "1.1.0",
-    "commander": "2.8.1",
-    "cron": "1.0.9",
-    "debug": "2.2.0",
-    "eventemitter2": "0.4.14",
-    "moment": "2.10.3",
-    "nssocket": "0.5.3",
-    "pidusage": "0.1.1",
-    "pmx": "latest",
-    "vizion": "latest",
-    "pm2-axon": "latest",
-    "pm2-axon-rpc": "0.3.6",
-    "pm2-deploy": "latest",
+    "commander": "^2.9",
+    "cron": "1.2.1",
+    "debug": "^2.3.2",
+    "eventemitter2": "1.0.5",
+    "fclone": "1.0.10",
+    "mkdirp": "0.5.1",
+    "moment": "^2.15",
+    "nssocket": "0.6.0",
+    "pidusage": "^1.1.0",
+    "pm2-axon": "3.0.2",
+    "pm2-axon-rpc": "0.4.5",
+    "pm2-deploy": "^0.3.3",
     "pm2-multimeter": "0.1.2",
-    "safe-clone-deep": "1.0.5",
-    "babel": "^5.x",
-    "is-iojs": "1.1.0",
-    "shelljs": "0.5.1",
-    "isbinaryfile": "^2.0.3",
-    "semver": "4.3.6"
+    "pmx": "^1.0.1",
+    "semver": "^5.2",
+    "shelljs": "0.7.5",
+    "source-map-support": "^0.4.6",
+    "vizion": "^0.2",
+    "yamljs": "0.2.8"
   },
   "devDependencies": {
-    "mocha": "^1.20.1",
-    "should": "^4.0.0",
-    "better-assert": "^1.0.0",
-    "punt": "*"
+    "mocha": "^3",
+    "should": "^11",
+    "better-assert": "^1.0.0"
   },
   "optionalDependencies": {
-    "pm2-logs": "~0.1.1",
-    "ikt": "git+http://ikt.pm2.io/ikt.git#master"
+    "gkt": "https://tgz.pm2.io/gkt-1.0.0.tgz"
   },
   "bugs": {
     "url": "https://github.com/PaulGuo/PM2.5/issues"

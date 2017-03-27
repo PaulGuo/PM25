@@ -1,3 +1,8 @@
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
 
 'use strict';
 
@@ -23,7 +28,7 @@ InteractorDaemonizer.rpc = {};
  * @param {} cb
  * @return
  */
-InteractorDaemonizer.ping = function(cb) {
+InteractorDaemonizer.ping = function(conf, cb) {
   var req = axon.socket('req');
   var client = new rpc.Client(req);
 
@@ -43,20 +48,23 @@ InteractorDaemonizer.ping = function(cb) {
     debug('Interactor Daemon alive');
   });
 
-  req.connect(cst.INTERACTOR_RPC_PORT);
+  req.connect(conf.INTERACTOR_RPC_PORT);
 };
 
-InteractorDaemonizer.killDaemon = function(cb) {
+InteractorDaemonizer.killInteractorDaemon = function(conf, cb) {
+  process.env.PM2_INTERACTOR_PROCESSING = true;
+
   debug('Killing interactor #1 ping');
-  InteractorDaemonizer.ping(function(online) {
+  InteractorDaemonizer.ping(conf, function(online) {
     debug('Interactor online', online);
 
     if (!online) {
       if (!cb) Common.printError('Interactor not launched');
-      return cb ? cb({msg:'Interactor not launched'}) : Common.exitCli(cst.SUCCESS_EXIT);
+
+      return cb(new Error('Interactor not launched'));
     }
 
-    InteractorDaemonizer.launchRPC(function(err, data) {
+    InteractorDaemonizer.launchRPC(conf, function(err, data) {
       if (err) {
         setTimeout(function() {
           InteractorDaemonizer.disconnectRPC(cb);
@@ -81,7 +89,7 @@ InteractorDaemonizer.killDaemon = function(cb) {
  * @param {} cb
  * @return
  */
-InteractorDaemonizer.launchRPC = function(cb) {
+InteractorDaemonizer.launchRPC = function(conf, cb) {
   var self    = this;
   var req     = axon.socket('req');
   this.client = new rpc.Client(req);
@@ -136,7 +144,7 @@ InteractorDaemonizer.launchRPC = function(cb) {
     });
   });
 
-  this.client_sock = req.connect(cst.INTERACTOR_RPC_PORT);
+  this.client_sock = req.connect(conf.INTERACTOR_RPC_PORT);
 };
 
 /**
@@ -148,22 +156,22 @@ InteractorDaemonizer.launchRPC = function(cb) {
  * @param {} cb
  * @return
  */
-function launchOrAttach(infos, cb) {
-  InteractorDaemonizer.ping(function(online) {
+function launchOrAttach(conf, infos, cb) {
+  InteractorDaemonizer.ping(conf, function(online) {
     if (online) {
       debug('Interactor online, restarting it...');
-      InteractorDaemonizer.launchRPC(function() {
+      InteractorDaemonizer.launchRPC(conf, function() {
         InteractorDaemonizer.rpc.kill(function(err) {
-          InteractorDaemonizer.daemonize(infos, function(err, msg) {
-            return cb(err, msg);
+          daemonize(conf, infos, function(err, msg, proc) {
+            return cb(err, msg, proc);
           });
         });
       });
     }
     else {
       debug('Interactor offline, launching it...');
-      InteractorDaemonizer.daemonize(infos, function(err, msg) {
-        return cb(err, msg);
+      daemonize(conf, infos, function(err, msg, proc) {
+        return cb(err, msg, proc);
       });
     }
     return false;
@@ -180,33 +188,34 @@ function launchOrAttach(infos, cb) {
  * @return
  */
 
-var UX = require('../CliUx.js');
+var UX = require('../API/CliUx.js');
 
-InteractorDaemonizer.daemonize = function(infos, cb) {
+var daemonize = function(conf, infos, cb) {
   var InteractorJS = path.resolve(path.dirname(module.filename), 'Daemon.js');
 
   var out = null;
   var err = null;
 
-  if (process.env.TRAVIS) {
+  if (process.env.TRAVIS || process.env.NODE_ENV == 'local_test') {
     // Redirect PM2 internal err and out
     // to STDERR STDOUT when running with Travis
     out = 1;
     err = 2;
   }
   else {
-    out = fs.openSync(cst.INTERACTOR_LOG_FILE_PATH, 'a');
-    err = fs.openSync(cst.INTERACTOR_LOG_FILE_PATH, 'a');
+    out = fs.openSync(conf.INTERACTOR_LOG_FILE_PATH, 'a');
+    err = fs.openSync(conf.INTERACTOR_LOG_FILE_PATH, 'a');
   }
 
-  var child = require('child_process').spawn('node', ['--expose-gc', '--gc-global', InteractorJS], {
+  var child = require('child_process').spawn('node', [InteractorJS], {
     silent     : false,
     detached   : true,
     cwd        : process.cwd(),
     env        : util._extend({
-      PM2_MACHINE_NAME : infos.machine_name,
-      PM2_SECRET_KEY   : infos.secret_key,
-      PM2_PUBLIC_KEY   : infos.public_key,
+      PM2_HOME             : conf.PM2_HOME,
+      PM2_MACHINE_NAME     : infos.machine_name,
+      PM2_SECRET_KEY       : infos.secret_key,
+      PM2_PUBLIC_KEY       : infos.public_key,
       PM2_REVERSE_INTERACT : infos.reverse_interact
     }, process.env),
     stdio      : ['ipc', out, err]
@@ -214,7 +223,7 @@ InteractorDaemonizer.daemonize = function(infos, cb) {
 
   UX.processing.start();
 
-  fs.writeFileSync(cst.INTERACTOR_PID_PATH, child.pid);
+  fs.writeFileSync(conf.INTERACTOR_PID_PATH, child.pid);
 
   function onError(msg) {
     debug('Error when launching Interactor, please check the agent logs');
@@ -230,23 +239,24 @@ InteractorDaemonizer.daemonize = function(infos, cb) {
 
     UX.processing.stop();
 
+    if (msg.debug) {
+      return cb(null, msg, child);
+    }
+
     child.removeAllListeners('error');
     child.disconnect();
 
-    if (msg.debug) {
-      return cb(msg);
-    }
     /*****************
      * Error messages
      */
     if (msg.error == true) {
       console.log(chalk.red('[PM25.io][ERROR]'), msg.msg);
-      console.log(chalk.cyan('[PM25.io]') + ' Contact support contact@keymetrics.io and send us the error message');
+      console.log(chalk.cyan('[PM25.io]') + ' Contact support contact@PM25.io and send us the error message');
       return cb(msg);
     }
 
     if (msg.km_data.disabled == true) {
-      console.log(chalk.cyan('[PM25.io]') + ' Server DISABLED BY ADMINISTRATION contact support contact@keymetrics.io with reference to your public and secret keys)');
+      console.log(chalk.cyan('[PM25.io]') + ' Server DISABLED BY ADMINISTRATION contact support contact@PM25.io with reference to your public and secret keys)');
       return cb(msg);
     }
 
@@ -256,39 +266,39 @@ InteractorDaemonizer.daemonize = function(infos, cb) {
     }
 
     else if (msg.km_data.active == false && msg.km_data.pending == true) {
-      console.log(chalk.red('[PM25.io]') + ' ' + chalk.bold.red('Agent PENDING') + ' - Web Access: https://app.keymetrics.io/');
+      console.log(chalk.red('[PM25.io]') + ' ' + chalk.bold.red('Agent PENDING') + ' - Web Access: https://app.PM25.io/');
       console.log(chalk.red('[PM25.io]') + ' You must upgrade your bucket in order to monitor more servers.');
 
       return cb(msg);
     }
 
     if (msg.km_data.active == true) {
-      console.log(chalk.cyan('[PM25.io]') + ' [%s] Agent ACTIVE - Web Access: https://app.keymetrics.io/',
+      console.log(chalk.cyan('[PM25.io]') + ' [%s] Agent ACTIVE - Web Access: https://app.PM25.io/',
                   msg.km_data.new ? 'Agent created' : 'Agent updated');
-      return cb(null, msg);
+      return cb(null, msg, child);
     }
 
-    return cb(null, msg);
+    return cb(null, msg, child);
   });
 
 };
 
-InteractorDaemonizer.update = function(cb) {
-  InteractorDaemonizer.ping(function(online) {
+InteractorDaemonizer.update = function(conf, cb) {
+  InteractorDaemonizer.ping(conf, function(online) {
     if (!online) {
       Common.printError('Interactor not launched');
-      return cb ? cb({msg:'Interactor not launched'}) : Common.exitCli(cst.ERROR_EXIT);
+      return cb(new Error('Interactor not launched'));
     }
-    InteractorDaemonizer.launchRPC(function() {
+    InteractorDaemonizer.launchRPC(conf, function() {
       InteractorDaemonizer.rpc.kill(function(err) {
         if (err) {
           Common.printError(err);
-          return cb ? cb({msg : err}) : Common.exitCli(cst.ERROR_EXIT);
+          return cb(new Error(err));
         }
         Common.printOut('Interactor successfully killed');
         setTimeout(function() {
-          InteractorDaemonizer.launchAndInteract({}, function() {
-            return cb ? cb(null, {msg : 'killed'}) : Common.exitCli(cst.SUCCESS_EXIT);
+          InteractorDaemonizer.launchAndInteract(conf, {}, function() {
+            return cb(null, {msg : 'Daemon launched'});
           });
         }, 500);
       });
@@ -305,7 +315,7 @@ InteractorDaemonizer.update = function(cb) {
  *
  * @param {object|string} secret_key|obj
  */
-InteractorDaemonizer.getSetKeys = function(secret_key, public_key, machine_name, cb) {
+InteractorDaemonizer.getSetKeys = function(conf, secret_key, public_key, machine_name, cb) {
   var os               = require('os');
 
   /**
@@ -325,13 +335,15 @@ InteractorDaemonizer.getSetKeys = function(secret_key, public_key, machine_name,
     machine_name = cpy.machine_name;
   }
 
-  try {
-    var interaction_conf     = json5.parse(fs.readFileSync(cst.INTERACTION_CONF));
 
-    secret_key   = secret_key   ? secret_key : interaction_conf.secret_key;
-    public_key   = public_key   ? public_key : interaction_conf.public_key;
-    machine_name = machine_name ? machine_name : interaction_conf.machine_name;
+  try {
+    var interaction_conf     = json5.parse(fs.readFileSync(conf.INTERACTION_CONF));
+
+
+    public_key       = public_key   ? public_key : interaction_conf.public_key;
+    machine_name     = machine_name ? machine_name : interaction_conf.machine_name;
     reverse_interact = interaction_conf.reverse_interact || true;
+    secret_key       = secret_key   ? secret_key : interaction_conf.secret_key;
 
     if (interaction_conf.version_management) {
       version_management_password = interaction_conf.version_management.password || version_management_password;
@@ -343,17 +355,17 @@ InteractorDaemonizer.getSetKeys = function(secret_key, public_key, machine_name,
     create_file = true;
   }
 
-  if (!secret_key) {
-    if (!process.env.PM2_SECRET_KEY)
-      return cb ? cb({msg:'secret key is not defined'}) : Common.exitCli(cst.ERROR_EXIT);
-    secret_key = process.env.PM2_SECRET_KEY;
-  }
+  if (process.env.PM2_SECRET_KEY || process.env.KEYMETRICS_SECRET)
+    secret_key = process.env.PM2_SECRET_KEY || process.env.KEYMETRICS_SECRET;
 
-  if (!public_key) {
-    if (!process.env.PM2_PUBLIC_KEY)
-      return cb ? cb({msg:'public key is not defined'}) : Common.exitCli(cst.ERROR_EXIT);
-    public_key = process.env.PM2_PUBLIC_KEY;
-  }
+  if (process.env.PM2_PUBLIC_KEY || process.env.KEYMETRICS_PUBLIC)
+    public_key = process.env.PM2_PUBLIC_KEY || process.env.KEYMETRICS_PUBLIC;
+
+  if (!secret_key)
+    return cb(new Error('secret key is not defined'));
+
+  if (!public_key)
+    return cb(new Error('public key is not defined'));
 
   if (!machine_name) {
     machine_name = os.hostname();
@@ -374,9 +386,9 @@ InteractorDaemonizer.getSetKeys = function(secret_key, public_key, machine_name,
         password : version_management_password
       }
     };
-    fs.writeFileSync(cst.INTERACTION_CONF, json5.stringify(new_interaction_conf, null, 4));
+    fs.writeFileSync(conf.INTERACTION_CONF, json5.stringify(new_interaction_conf, null, 4));
   } catch(e) {
-    console.error('Error when writting configuration file %s', cst.INTERACTION_CONF);
+    console.error('Error when writting configuration file %s', conf.INTERACTION_CONF);
   }
 
   /**
@@ -388,7 +400,6 @@ InteractorDaemonizer.getSetKeys = function(secret_key, public_key, machine_name,
 };
 
 InteractorDaemonizer.disconnectRPC = function(cb) {
-
   if (!InteractorDaemonizer.client_sock ||
       !InteractorDaemonizer.client_sock.close)
     return cb(null, {
@@ -396,8 +407,8 @@ InteractorDaemonizer.disconnectRPC = function(cb) {
       msg : 'RPC connection to Interactor Daemon is not launched'
     });
 
-  if (InteractorDaemonizer.client_sock.connected == false ||
-      InteractorDaemonizer.client_sock.closing == true) {
+  if (InteractorDaemonizer.client_sock.connected === false ||
+      InteractorDaemonizer.client_sock.closing === true) {
     return cb(null, {
       success : false,
       msg : 'RPC closed'
@@ -429,28 +440,57 @@ InteractorDaemonizer.disconnectRPC = function(cb) {
   return false;
 };
 
-InteractorDaemonizer.launchAndInteract = function(opts, cb) {
+InteractorDaemonizer.launchAndInteract = function(conf, opts, cb) {
   // For Watchdog
   if (process.env.PM2_AGENT_ONLINE) {
     return process.nextTick(cb);
   }
 
-  InteractorDaemonizer.getSetKeys({
-    secret_key   : opts.secret_key   || null,
-    public_key   : opts.public_key   || null,
-    machine_name : opts.machine_name || null
-  }, function(err, data)  {
+  process.env.PM2_INTERACTOR_PROCESSING = true;
+
+  InteractorDaemonizer.getSetKeys(conf, opts, function(err, data)  {
     if (err || !data) {
-      return cb ? cb({msg:'Error when getting / setting keys', error : err.stack || err}) : Common.exitCli(cst.ERROR_EXIT);
+      return cb(err);
     }
 
     console.log(chalk.cyan('[PM25.io]') + ' Using (Public key: %s) (Private key: %s)', data.public_key, data.secret_key);
 
-    launchOrAttach(data, function(err, msg) {
+    launchOrAttach(conf, data, function(err, msg, proc) {
       if (err)
+        return cb(err);
+      return cb(null, msg, proc);
+    });
+    return false;
+  });
+};
 
-        return cb ? cb({error : err.stack || err}) : Common.exitCli(cst.ERROR_EXIT);
-      return cb ? cb(null, msg) : Common.exitCli(cst.SUCCESS_EXIT);
+/**
+ * Description
+ * @method getInteractInfo
+ * @param {} cb
+ * @return
+ */
+InteractorDaemonizer.getInteractInfo = function(conf, cb) {
+  debug('Getting interaction info');
+  if (process.env.PM2_NO_INTERACTION) return;
+  InteractorDaemonizer.ping(conf, function(online) {
+    if (!online) {
+      return cb(new Error('Interactor is offline'));
+    }
+    InteractorDaemonizer.launchRPC(conf, function() {
+      InteractorDaemonizer.rpc.getInfos(function(err, infos) {
+        if (err)
+          return cb(err);
+
+        // Avoid general CLI to interfere with Keymetrics CLI commands
+        if (process.env.PM2_INTERACTOR_PROCESSING)
+          return cb(null, infos);
+
+        InteractorDaemonizer.disconnectRPC(function() {
+          return cb(null, infos);
+        });
+        return false;
+      });
     });
     return false;
   });

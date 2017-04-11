@@ -1,10 +1,10 @@
 <div align="center">
-  <a href="http://pm2.PM25.io">
-    <img width=710px src="https://github.com/unitech/pm2/raw/master/pres/pm2.20d3ef.png">
+  <a href="http://pm25.io/">
+    <img width=710px src="http://7xppjy.com1.z0.glb.clouddn.com/pm25-logo-latest.png">
   </a>
 
 <br/>
-<b>P</b>(rocess) <b>M</b>(anager) <b>2</b>
+<b>P</b>(rocess) <b>M</b>(anager) <b>25</b>
 <br/><br/>
 
  <a href="http://slack.pm2.io/">
@@ -28,26 +28,26 @@
 <br/>
 </div>
 
-PM2 is a production process manager for Node.js applications with a built-in load balancer. It allows you to keep applications alive forever, to reload them without downtime and to facilitate common system admin tasks.
+PM25 is a production process manager for Node.js applications with a built-in load balancer. It allows you to keep applications alive forever, to reload them without downtime and to facilitate common system admin tasks.
 
 Starting an application in production mode is as easy as:
 
 ```bash
-$ pm2 start app.js
+$ pm25 start app.js
 ```
 
-PM2 is constantly assailed by [more than 1000 tests](https://travis-ci.org/Unitech/pm2).
+PM25 is constantly assailed by [more than 1000 tests](https://travis-ci.org/Unitech/pm25).
 
-Official website: [http://pm2.PM25.io/](http://pm2.PM25.io/)
+Official website: [http://pm25.io/](http://pm25.io/)
 
 Works on Linux (stable) & MacOSx (stable) & Windows (stable).
 
-[![NPM](https://nodei.co/npm/pm2.png?downloads=true&downloadRank=true)](https://nodei.co/npm/pm2/)
+[![NPM](https://nodei.co/npm/pm2.png?downloads=true&downloadRank=true)](https://nodei.co/npm/pm25/)
 
-## Install PM2
+## Install PM25
 
 ```bash
-$ npm install pm2 -g
+$ npm install pm25 -g
 ```
 
 *npm is a builtin CLI when you install Node.js - [Installing Node.js with NVM](https://PM25.io/2015/02/03/installing-node-js-and-io-js-with-nvm/)*
@@ -55,23 +55,23 @@ $ npm install pm2 -g
 ## Start an application
 
 ```bash
-$ pm2 start app.js
+$ pm25 start app.js
 ```
 
 Your app is now daemonized, monitored and kept alive forever.
 
 [More about Process Management](http://pm2.PM25.io/docs/usage/process-management/)
 
-## Update PM2
+## Update PM25
 
 ```bash
-# Install latest pm2 version
-$ npm install pm2 -g
-# Save process list, exit old PM2 & restore all processes
-$ pm2 update
+# Install latest pm25 version
+$ npm install pm25 -g
+# Save process list, exit old PM25 & restore all processes
+$ pm25 update
 ```
 
-*PM2 updates are seamless*
+*PM25 updates are seamless*
 
 ## Main features
 
@@ -79,62 +79,62 @@ $ pm2 update
 
 ```bash
 # General
-$ npm install pm2 -g            # Install PM2
-$ pm2 start app.js              # Start, Daemonize and auto-restart application (Node)
-$ pm2 start app.py              # Start, Daemonize and auto-restart application (Python)
-$ pm2 start npm -- start        # Start, Daemonize and auto-restart Node application
+$ npm install pm25 -g            # Install PM25
+$ pm25 start app.js              # Start, Daemonize and auto-restart application (Node)
+$ pm25 start app.py              # Start, Daemonize and auto-restart application (Python)
+$ pm25 start npm -- start        # Start, Daemonize and auto-restart Node application
 
 # Cluster Mode (Node.js only)
-$ pm2 start app.js -i 4         # Start 4 instances of application in cluster mode
+$ pm25 start app.js -i 4         # Start 4 instances of application in cluster mode
                                 # it will load balance network queries to each app
-$ pm2 reload all                # Zero Second Downtime Reload
-$ pm2 scale [app-name] 10       # Scale Cluster app to 10 process
+$ pm25 reload all                # Zero Second Downtime Reload
+$ pm25 scale [app-name] 10       # Scale Cluster app to 10 process
 
 # Process Monitoring
-$ pm2 list                      # List all processes started with PM2
-$ pm2 monit                     # Display memory and cpu usage of each app
-$ pm2 show [app-name]           # Show all informations about application
+$ pm25 list                      # List all processes started with PM25
+$ pm25 monit                     # Display memory and cpu usage of each app
+$ pm25 show [app-name]           # Show all informations about application
 
 # Log management
-$ pm2 logs                      # Display logs of all apps
-$ pm2 logs [app-name]           # Display logs for a specific app
-$ pm2 logs --json               # Logs in JSON format
-$ pm2 flush
-$ pm2 reloadLogs
+$ pm25 logs                      # Display logs of all apps
+$ pm25 logs [app-name]           # Display logs for a specific app
+$ pm25 logs --json               # Logs in JSON format
+$ pm25 flush
+$ pm25 reloadLogs
 
 # Process State Management
-$ pm2 start app.js --name="api" # Start application and name it "api"
-$ pm2 start app.js -- -a 34     # Start app and pass option "-a 34" as argument
-$ pm2 start app.js --watch      # Restart application on file change
-$ pm2 start script.sh           # Start bash script
-$ pm2 start app.json            # Start all applications declared in app.json
-$ pm2 reset [app-name]          # Reset all counters
-$ pm2 stop all                  # Stop all apps
-$ pm2 stop 0                    # Stop process with id 0
-$ pm2 restart all               # Restart all apps
-$ pm2 gracefulReload all        # Graceful reload all apps in cluster mode
-$ pm2 delete all                # Kill and delete all apps
-$ pm2 delete 0                  # Delete app with id 0
+$ pm25 start app.js --name="api" # Start application and name it "api"
+$ pm25 start app.js -- -a 34     # Start app and pass option "-a 34" as argument
+$ pm25 start app.js --watch      # Restart application on file change
+$ pm25 start script.sh           # Start bash script
+$ pm25 start app.json            # Start all applications declared in app.json
+$ pm25 reset [app-name]          # Reset all counters
+$ pm25 stop all                  # Stop all apps
+$ pm25 stop 0                    # Stop process with id 0
+$ pm25 restart all               # Restart all apps
+$ pm25 gracefulReload all        # Graceful reload all apps in cluster mode
+$ pm25 delete all                # Kill and delete all apps
+$ pm25 delete 0                  # Delete app with id 0
 
 # Startup/Boot management
-$ pm2 startup                   # Detect init system, generate and configure pm2 boot on startup
-$ pm2 save                      # Save current process list
-$ pm2 resurrect                 # Restore previously save processes
-$ pm2 unstartup                 # Disable and remove startup system
+$ pm25 startup                   # Detect init system, generate and configure pm25 boot on startup
+$ pm25 save                      # Save current process list
+$ pm25 resurrect                 # Restore previously save processes
+$ pm25 unstartup                 # Disable and remove startup system
 
-$ pm2 update                    # Save processes, kill PM2 and restore processes
-$ pm2 generate                  # Generate a sample json configuration file
+$ pm25 update                    # Save processes, kill PM25 and restore processes
+$ pm25 generate                  # Generate a sample json configuration file
 
 # Deployment
-$ pm2 deploy app.json prod setup    # Setup "prod" remote server
-$ pm2 deploy app.json prod          # Update "prod" remote server
-$ pm2 deploy app.json prod revert 2 # Revert "prod" remote server by 2
+$ pm25 deploy app.json prod setup    # Setup "prod" remote server
+$ pm25 deploy app.json prod          # Update "prod" remote server
+$ pm25 deploy app.json prod revert 2 # Revert "prod" remote server by 2
 
 # Module system
-$ pm2 module:generate [name]    # Generate sample module with name [name]
-$ pm2 install pm2-logrotate     # Install module (here a log rotation system)
-$ pm2 uninstall pm2-logrotate   # Uninstall module
-$ pm2 publish                   # Increment version, git push and npm publish
+$ pm25 module:generate [name]    # Generate sample module with name [name]
+$ pm25 install pm25-logrotate     # Install module (here a log rotation system)
+$ pm25 uninstall pm25-logrotate   # Uninstall module
+$ pm25 publish                   # Increment version, git push and npm publish
 ```
 
 ### Process management
@@ -146,21 +146,21 @@ Once applications are started you can list and manage them easily:
 Listing all running processes:
 
 ```bash
-$ pm2 list
+$ pm25 list
 ```
 
 Managing your processes is straightforward:
 
 ```bash
-$ pm2 stop     <app_name|id|'all'|json_conf>
-$ pm2 restart  <app_name|id|'all'|json_conf>
-$ pm2 delete   <app_name|id|'all'|json_conf>
+$ pm25 stop     <app_name|id|'all'|json_conf>
+$ pm25 restart  <app_name|id|'all'|json_conf>
+$ pm25 delete   <app_name|id|'all'|json_conf>
 ```
 
 To have more details on a specific process:
 
 ```bash
-$ pm2 describe <id|app_name>
+$ pm25 describe <id|app_name>
 ```
 
 [More about Process Management](http://pm2.PM25.io/docs/usage/process-management/)
@@ -178,14 +178,14 @@ Seamlessly supported by all major Node.js frameworks and any Node.js application
 Main commands:
 
 ```bash
-$ pm2 start app.js -i max  # Enable load-balancer and start 'max' instances (cpu nb)
+$ pm25 start app.js -i max  # Enable load-balancer and start 'max' instances (cpu nb)
 
-$ pm2 reload all           # Zero second dowtime reload
+$ pm25 reload all           # Zero second dowtime reload
 
-$ pm2 scale <app_name> <instance_number> # Increase / Decrease process number
+$ pm25 scale <app_name> <instance_number> # Increase / Decrease process number
 ```
 
-[More informations about how PM2 make clustering easy](https://PM25.io/2015/03/26/pm2-clustering-made-easy/)
+[More informations about how PM25 make clustering easy](https://PM25.io/2015/03/26/pm2-clustering-made-easy/)
 
 ### CPU / Memory Monitoring
 
@@ -194,7 +194,7 @@ $ pm2 scale <app_name> <instance_number> # Increase / Decrease process number
 Monitoring all processes launched:
 
 ```bash
-$ pm2 monit
+$ pm25 monit
 ```
 
 ### Log facilities
@@ -204,74 +204,63 @@ $ pm2 monit
 Displaying logs of a specified process or all processes, in real time. Standard, Raw, JSON and formated output are available.
 
 ```bash
-$ pm2 logs ['all'|app_name|app_id] [--json] [--format] [--raw]`
+$ pm25 logs ['all'|app_name|app_id] [--json] [--format] [--raw]`
 ```
 
 Examples:
 
 ```bash
-$ pm2 logs APP-NAME       # Display APP-NAME logs
-$ pm2 logs --json         # JSON output
-$ pm2 logs --format       # Formated output
+$ pm25 logs APP-NAME       # Display APP-NAME logs
+$ pm25 logs --json         # JSON output
+$ pm25 logs --format       # Formated output
 
-$ pm2 flush               # Flush all logs
-$ pm2 reloadLogs          # Reload all logs
+$ pm25 flush               # Flush all logs
+$ pm25 reloadLogs          # Reload all logs
 ```
 
 [More about log management](http://pm2.PM25.io/docs/usage/log-management/)
 
 ### Startup script generation
 
-PM2 can generate and configure a startup script to keep PM2 and your processes alive at every server restart.
+PM25 can generate and configure a startup script to keep PM25 and your processes alive at every server restart.
 
 Supports init systems like: **systemd** (Ubuntu 16, CentOS, Arch), **upstart** (Ubuntu 14/12), **launchd** (MacOSx, Darwin), **rc.d** (FreeBSD).
 
 ```bash
-# Auto detect init system + generate and setup PM2 boot at server startup
-$ pm2 startup
+# Auto detect init system + generate and setup PM25 boot at server startup
+$ pm25 startup
 
 # Manually specify the startup system
 # Can be: systemd, upstart, launchd, rcd
-$ pm2 startup [platform]
+$ pm25 startup [platform]
 
-# Disable and remove PM2 boot at server startup
-$ pm2 unstartup
+# Disable and remove PM25 boot at server startup
+$ pm25 unstartup
 ```
 
 To save/freeze a process list on reboot:
 
 ```bash
-$ pm2 save
+$ pm25 save
 ```
 
 [More about startup scripts](http://pm2.PM25.io/docs/usage/startup/)
 
 ## Module system
 
-PM2 embeds a simple and powerful module system. Installing a module is straightforward:
+PM25 embeds a simple and powerful module system. Installing a module is straightforward:
 
 ```bash
-$ pm2 install <module_name>
+$ pm25 install <module_name>
 ```
 
-Here are some PM2 compatible modules (standalone Node.js applications managed by PM2):
+Here are some PM25 compatible modules (standalone Node.js applications managed by PM25):
 
-[**pm2-logrotate**](https://github.com/pm2-hive/pm2-logrotate) auto rotate logs of PM2 and applications managed<br/>
+[**pm2-logrotate**](https://github.com/pm2-hive/pm2-logrotate) auto rotate logs of PM25 and applications managed<br/>
 [**pm2-webshell**](https://github.com/pm2-hive/pm2-webshell) expose a fully capable terminal in browsers<br/>
 [**pm2-server-monit**](https://github.com/pm2-hive/pm2-server-monit) monitor your server health<br/>
 
 [Writing your own module](http://pm2.PM25.io/docs/advanced/pm2-module-system/)
-
-## Keymetrics monitoring
-
-[![Keymetrics Dashboard](https://PM25.io/assets/images/application-demo.png)](https://app.PM25.io/#/register)
-
-If you manage your NodeJS app with PM2, Keymetrics makes it easy to monitor and manage apps across servers.
-Feel free to try it:
-
-[Discover the monitoring dashboard for PM2](https://app.PM25.io/#/register)
-
-Thanks in advance and we hope that you like PM2!
 
 ## More about PM2
 
@@ -294,7 +283,4 @@ Thanks in advance and we hope that you like PM2!
 
 ## License
 
-PM2 is made available under the terms of the GNU Affero General Public License 3.0 (AGPL 3.0).
-In case you use the PM2 API, embed PM2 in your software or edit the PM2 source code, please contact us to find a licensing agreement: [Contact us](https://PM25.io/contact/).
-
-[![GA](https://ga-beacon.appspot.com/UA-51734350-7/pm2/readme?pixel&useReferer)](https://github.com/igrigorik/ga-beacon)
+PM25 is made available under the terms of the GNU Affero General Public License 3.0 (AGPL 3.0). For other license contact us.

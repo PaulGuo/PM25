@@ -1,3 +1,8 @@
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
 'use strict';
 
 /**
@@ -5,11 +10,8 @@
  * @author Alexandre Strzelewicz <as@unitech.io>
  * @project PM2
  */
-
 var cluster       = require('cluster');
-var fs            = require('fs');
 var cst           = require('../../constants.js');
-var util          = require('util');
 var Utility       = require('../Utility.js');
 var pkg           = require('../../package.json');
 
@@ -75,7 +77,26 @@ module.exports = function ClusterMode(God) {
         });
       }
       else {
-        return God.bus.emit('process:msg', msg);
+
+        if (typeof msg == 'object' && 'node_version' in msg) {
+          clu.pm2_env.node_version = msg.node_version;
+          return false;
+        } else if (typeof msg == 'object' && 'cron_restart' in msg) {
+          return God.restartProcessId({
+            id : clu.pm2_env.pm_id
+          }, function() {
+            console.log('Application %s has been restarted via CRON', clu.pm2_env.name);
+          });
+        }
+
+        return God.bus.emit('process:msg', {
+          at      : Utility.getDate(),
+          raw     : msg,
+          process :  {
+            pm_id      : clu.pm2_env.pm_id,
+            name       : clu.pm2_env.name
+          }
+        });
       }
     });
 

@@ -23,7 +23,7 @@ $pm2 delete all
 #
 # Via JSON
 #
-$pm2 start max-mem.json
+$pm2 start json-reload/max-mem.json
 sleep 3
 $pm2 list
 should 'process should been restarted' 'restart_time: 0' 0
@@ -97,24 +97,3 @@ cat outmerge-0.log > /dev/null
 ispec 'file outmerge-0.log should not exist'
 
 rm outmerge*
-
-########### coffee cluster test
-$pm2 delete all
-
-$pm2 start echo.coffee -i 1
-
-should 'process should not have been restarted' 'restart_time: 0' 1
-should 'process should be online' "status: 'online'" 1
-
-########### garbage collection
-
-$pm2 list
-
-OUT_LOG=`$pm2 gc`
-
-if [ "$OUT_LOG" = "[PM2] Garbage collection manually triggered" ]
-then
-    success "garbage collector manually triggered"
-else
-    fail "garbage collector could not be triggered"
-fi

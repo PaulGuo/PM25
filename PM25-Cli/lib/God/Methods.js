@@ -1,3 +1,8 @@
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
 'use strict';
 
 /**
@@ -6,10 +11,11 @@
  * @project PM2
  */
 var p             = require('path');
-var Common        = require('../Common');
+var Utility       = require('../Utility');
 var treekill      = require('../TreeKill');
 var cst           = require('../../constants.js');
-var debug         = require('debug')('god:methods');
+var debug         = require('debug')('pm2:methods');
+
 /**
  * Description
  * @method exports
@@ -44,26 +50,41 @@ module.exports = function(God) {
     return God.clusters_db;
   };
 
+  God.getFormatedProcess = function getFormatedProcesses(id) {
+    if (God.clusters_db[id])
+      return {
+        pid     : God.clusters_db[id].process.pid,
+        name    : God.clusters_db[id].pm2_env.name,
+        pm2_env : God.clusters_db[id].pm2_env,
+        pm_id   : God.clusters_db[id].pm2_env.pm_id
+      };
+    return {};
+  };
+
   /**
-   * Description
+   * Get formated processes
    * @method getFormatedProcesses
-   * @return arr
+   * @return {Array} formated processes
    */
   God.getFormatedProcesses = function getFormatedProcesses() {
-    var db = Common.clone(God.clusters_db);
-    var arr = [];
+    var keys = Object.keys(God.clusters_db);
+    var arr  = new Array();
+    var kl   = keys.length;
 
-    for (var key in db) {
-      if (db[key]) {
-        arr.push({
-          pid     : db[key].process.pid,
-          name    : db[key].pm2_env.name,
-          pm2_env : db[key].pm2_env,
-          pm_id   : db[key].pm2_env.pm_id
-        });
-      }
+    for (var i = 0; i < kl; i++) {
+      var key = keys[i];
+
+      if (!God.clusters_db[key]) continue;
+      // Avoid _old type pm_ids
+      if (isNaN(God.clusters_db[key].pm2_env.pm_id)) continue;
+
+      arr.push({
+        pid     : God.clusters_db[key].process.pid,
+        name    : God.clusters_db[key].pm2_env.name,
+        pm2_env : God.clusters_db[key].pm2_env,
+        pm_id   : God.clusters_db[key].pm2_env.pm_id
+      })
     }
-    db = null;
     return arr;
   };
 
@@ -106,63 +127,6 @@ module.exports = function(God) {
   };
 
   /**
-   * Description
-   * @method findByScript
-   * @param {} script
-   * @param {} cb
-   * @return
-   */
-  God.findByScript = function(script, cb) {
-    var db = Common.clone(God.clusters_db);
-    var arr = [];
-
-    for (var key in db) {
-      if (p.basename(db[key].pm2_env.pm_exec_path) == script) {
-        arr.push(db[key].pm2_env);
-      }
-    }
-    cb(null, arr.length == 0 ? null : arr);
-  };
-
-  /**
-   * Description
-   * @method findByPort
-   * @param {} port
-   * @param {} cb
-   * @return
-   */
-  God.findByPort = function(port, cb) {
-    var db = God.clusters_db;
-    var arr = [];
-
-    for (var key in db) {
-      if (db[key].pm2_env.port && db[key].pm2_env.port == port) {
-        arr.push(db[key].pm2_env);
-      }
-    }
-    cb(null, arr.length == 0 ? null : arr);
-  };
-
-  /**
-   * Description
-   * @method findByFullPath
-   * @param {} path
-   * @param {} cb
-   * @return
-   */
-  God.findByFullPath = function(path, cb) {
-    var db = God.clusters_db;
-    var procs = [];
-
-    for (var key in db) {
-      if (db[key].pm2_env.pm_exec_path == path) {
-        procs.push(db[key]);
-      }
-    }
-    cb(null, procs.length == 0 ? null : procs);
-  };
-
-  /**
    * Check if a process is alive in system processes
    * Return TRUE if process online
    * @method checkProcess
@@ -189,27 +153,48 @@ module.exports = function(God) {
    * @param {} cb
    * @return Literal
    */
-  God.processIsDead = function(pid, cb) {
+  God.processIsDead = function(pid, pm2_env, cb, sigkill) {
     if (!pid) return cb({type : 'param:missing', msg : 'no pid passed'});
 
-    var timeout = null;
+    var timeout      = null;
+    var kill_timeout = (pm2_env && pm2_env.kill_timeout) ? pm2_env.kill_timeout : cst.KILL_TIMEOUT;
+    var mode         = pm2_env.exec_mode;
 
     var timer = setInterval(function() {
       if (God.checkProcess(pid) === false) {
-        console.log('Process with pid %d killed', pid);
+        console.log('pid=%d msg=process killed', pid);
         clearTimeout(timeout);
         clearInterval(timer);
         return cb(null, true);
       }
-      console.log('Process with pid %d still not killed, retrying...', pid);
+      console.log('pid=%d msg=failed to kill - retrying in 100ms', pid);
       return false;
-    }, 50);
+    }, 100);
 
     timeout = setTimeout(function() {
       clearInterval(timer);
-      console.log('Process with pid %d still alive after %sms', pid, cst.KILL_TIMEOUT);
-      return cb({type : 'timeout', msg : 'timeout'});
-    }, cst.KILL_TIMEOUT);
+      if (sigkill) {
+        console.log('Process with pid %d could not be killed', pid);
+        return cb({type : 'timeout', msg : 'timeout'});
+      }
+      else {
+        console.log('Process with pid %d still alive after %sms, sending it SIGKILL now...', pid, kill_timeout);
+
+        if (pm2_env.treekill !== true) {
+          try {
+            process.kill(parseInt(pid), 'SIGKILL');
+          } catch(e) {
+            console.error('[SimpleKill][SIGKILL] %s pid can not be killed', pid, e.stack, e.message);
+          }
+          return God.processIsDead(pid, pm2_env, cb, true);
+        }
+        else {
+          treekill(parseInt(pid), 'SIGKILL', function(err) {
+            return God.processIsDead(pid, pm2_env, cb, true);
+          });
+        }
+      }
+    }, kill_timeout);
     return false;
   };
 
@@ -226,21 +211,19 @@ module.exports = function(God) {
 
     var mode = pm2_env.exec_mode;
 
-    try {
-      if(pm2_env.treekill !== true)
-        process.kill(pid);
-      else {
-        if (mode.indexOf('cluster') === 0)
-          treekill(pid);
-        else
-          process.kill(-(pid), 'SIGINT');
+    if (pm2_env.treekill !== true) {
+      try {
+        process.kill(parseInt(pid), 'SIGINT');
+      } catch(e) {
+        console.error('[SimpleKill] %s pid can not be killed', pid, e.stack, e.message);
       }
-    } catch(e) {
-      console.error('%s pid can not be killed', pid, e);
-      return cb({type : 'kill', msg : pid + ' can not be killed'});
+      return God.processIsDead(pid, pm2_env, cb);
     }
-
-    return God.processIsDead(pid, cb);
+    else {
+      treekill(parseInt(pid), 'SIGINT', function(err) {
+        return God.processIsDead(pid, pm2_env, cb);
+      });
+    }
   };
 
   /**
@@ -260,17 +243,6 @@ module.exports = function(God) {
    * @return
    */
   God.resetState = function(pm2_env) {
-    pm2_env.created_at = Date.now();
-    pm2_env.unstable_restarts = 0;
-  };
-
-  /**
-   * Description
-   * @method deepReset
-   * @param {} pm2_env
-   * @return
-   */
-  God.deepReset = function(pm2_env) {
     pm2_env.created_at = Date.now();
     pm2_env.unstable_restarts = 0;
   };

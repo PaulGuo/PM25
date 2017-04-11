@@ -1,5 +1,10 @@
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
 
-var pm2     = require('../..');
+var PM2     = require('../..');
 var debug   = require('debug')('interface:watchdog');
 var shelljs = require('shelljs');
 var csts    = require('../../constants');
@@ -11,9 +16,8 @@ var WatchDog = module.exports = {
     var self = this;
     this.ipm2 = p.conf.ipm2;
     this.relaunching = false;
+    this.pm2_instance = p.conf.pm2_instance;
 
-    pm2.connect(function() {});
-    console.log('[WATCHDOG] Launching');
     /**
      * Handle PM2 connection state changes
      */
@@ -22,6 +26,8 @@ var WatchDog = module.exports = {
       self.relaunching = false;
       self.autoDump();
     });
+
+    console.log('[WATCHDOG] Launching');
 
     this.ipm2.on('reconnecting', function() {
       console.log('[WATCHDOG] PM2 is disconnected - Relaunching PM2');
@@ -40,7 +46,7 @@ var WatchDog = module.exports = {
 
     console.log('[WATCHDOG] Trying to launch PM2 #1');
 
-    shelljs.exec(process.cwd() + '/bin/pm2 resurrect', function() {
+    shelljs.exec('node ' + process.cwd() + '/bin/pm2 resurrect', function() {
       setTimeout(function() {
         self.relaunching = false;
       }, 2500);
@@ -52,7 +58,7 @@ var WatchDog = module.exports = {
     this.dump_interval = setInterval(function() {
       if (self.relaunching == true) return false;
 
-      pm2.dump(function(err) {
+      self.pm2_instance.dump(function(err) {
         if (err) return console.error('[WATCHDOG] Error when dumping');
         debug('PM2 process list dumped');
         return false;

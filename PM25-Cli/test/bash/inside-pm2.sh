@@ -11,8 +11,6 @@ echo -e "\033[1mRunning tests:\033[0m"
 # Check that we can start a process from inside a PM2 watched app. #
 ####################################################################
 
-$pm2 kill
-
 TEST_VARIABLE='hello1' $pm2 start startProcessInsidePm2.json
 >inside-out-1.log
 
@@ -30,11 +28,18 @@ should 'restarted status should be zero' "restart_time: 0" 2
 grep "hello1" inside-out-1.log &> /dev/null
 spec "Child should have hello1 variable"
 
-TEST_VARIABLE='hello2' $pm2 restart "insideProcess"
+TEST_VARIABLE='hello2' $pm2 restart "insideProcess" --update-env
 sleep 1
 grep "hello2" inside-out-1.log &> /dev/null
 spec "Child should have hello2 variable after restart"
 
-$pm2 kill
+# Call bash script that restarts app
+$pm2 delete all
 
+$pm2 start echo.js
+sleep 1
 
+export PM2_PATH=$pm2
+$pm2 start inside/inner_restart.sh --no-autorestart
+sleep 2
+should 'restarted status should be one' "restart_time: 3" 1

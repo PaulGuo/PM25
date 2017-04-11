@@ -1,23 +1,36 @@
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
 
+/******************************
+ *    ______ _______ ______
+ *   |   __ \   |   |__    |
+ *   |    __/       |    __|
+ *   |___|  |__|_|__|______|
+ *
+ *    Main Daemon side file
+ *
+ ******************************/
+
+var semver        = require('semver');
 var cluster       = require('cluster');
 var numCPUs       = require('os').cpus() ? require('os').cpus().length : 1;
 var path          = require('path');
-var util          = require('util');
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var fs            = require('fs');
-var p             = path;
-var Common        = require('./Common');
-var cst           = require('../constants.js');
 var pidusage      = require('pidusage');
 var vizion        = require('vizion');
 var debug         = require('debug')('pm2:god');
-var Utility       = require('./Utility.js');
+var Utility       = require('./Utility');
+var cst           = require('../constants.js');
 
 /**
  * Override cluster module configuration
  */
 cluster.setupMaster({
-  exec : p.resolve(p.dirname(module.filename), 'ProcessContainer.js')
+  exec : path.resolve(path.dirname(module.filename), 'ProcessContainer.js')
 });
 
 /**
@@ -39,13 +52,11 @@ Utility.overrideConsole(God.bus);
  * Populate God namespace
  */
 require('./Event.js')(God);
-require('./God/LockSystem.js')(God);
 require('./God/Methods.js')(God);
 require('./God/ForkMode.js')(God);
 require('./God/ClusterMode.js')(God);
 require('./God/Reload')(God);
 require('./God/ActionMethods')(God);
-require('./God/DeprecatedCalls')(God);
 require('./Watcher')(God);
 
 /**
@@ -57,10 +68,9 @@ require('./Watcher')(God);
  * @return Literal
  */
 God.executeApp = function executeApp(env, cb) {
-  var env_copy = Common.clone(env);
-  var startingInside = (env_copy['env'] && env_copy['env']['pm_id'] && !env_copy['started_inside']) ? true : false;
+  var env_copy = Utility.clone(env);
 
-  Common.extend(env_copy, env_copy.env);
+  Utility.extend(env_copy, env_copy.env);
 
   env_copy['status']         = cst.LAUNCHING_STATUS;
   env_copy['pm_uptime']      = Date.now();
@@ -81,19 +91,10 @@ God.executeApp = function executeApp(env, cb) {
    * 3 - Assign a log file name depending on the id
    * 4 - If watch option is set, look for changes
    */
-  if (env_copy['pm_id'] === undefined || startingInside) {
+  if (env_copy['pm_id'] === undefined) {
     env_copy['pm_id']             = God.getNewId();
     env_copy['restart_time']      = 0;
     env_copy['unstable_restarts'] = 0;
-    env_copy['started_inside']    = startingInside;
-
-    env_copy['command']     = {
-      locked      : false,
-      metadata    : {},
-      started_at  : null,
-      finished_at : null,
-      error       : null
-    };
 
     // add -pm_id to pid file
     env_copy.pm_pid_path = env_copy.pm_pid_path.replace(/-[0-9]+\.pid$|\.pid$/g, '-' + env_copy['pm_id'] + '.pid');
@@ -111,8 +112,6 @@ God.executeApp = function executeApp(env, cb) {
       God.watch.enable(env_copy);
     }
   }
-
-  //if (env_copy['command']) env_copy['command'].locked = false;
 
   /**
    * Avoid `Resource leak error` due to 'disconnect' event
@@ -138,6 +137,18 @@ God.executeApp = function executeApp(env, cb) {
     });
   };
 
+  /** Callback when application is launched */
+  var readyCb = function ready(proc) {
+      if (proc.pm2_env.vizion !== false && proc.pm2_env.vizion !== "false")
+        God.finalizeProcedure(proc);
+      else
+        God.notify('online', proc);
+
+      proc.pm2_env.status = cst.ONLINE_STATUS;
+      console.log('App name:%s id:%s online', proc.pm2_env.name, proc.pm2_env.pm_id);
+      if (cb) cb(null, proc);
+  }
+
   if (env_copy.exec_mode === 'cluster_mode') {
     /**
      * Cluster mode logic (for NodeJS apps)
@@ -155,8 +166,10 @@ God.executeApp = function executeApp(env, cb) {
 
       God.clusters_db[clu.pm2_env.pm_id] = clu;
 
-      // Temporary
-      workAround(clu);
+      if (semver.lt(process.version, '7.0.0') === true) {
+        // Temporary
+        workAround(clu);
+      }
 
       clu.once('error', function(err) {
         console.error(err.stack || err);
@@ -175,19 +188,12 @@ God.executeApp = function executeApp(env, cb) {
       });
 
       clu.once('exit', function cluExit(code, signal) {
-        God.handleExit(clu, signal || code);
+        God.handleExit(clu, code || 0, signal || 'SIGINT');
       });
 
-      clu.once('online', function cluOnline() {
-        console.log('App name:%s id:%s online', clu.pm2_env.name, clu.pm2_env.pm_id);
-        clu.pm2_env.status = cst.ONLINE_STATUS;
-        if (clu.pm2_env.vizion !== false)
-          God.finalizeProcedure(clu)
-        else
-          God.notify('online', clu);
-        if (cb) cb(null, clu);
+      return clu.once('online', function () {
+        return readyCb(clu);
       });
-      return false;
     });
   }
   else {
@@ -219,17 +225,19 @@ God.executeApp = function executeApp(env, cb) {
         if (clu.connected === true)
           clu.disconnect && clu.disconnect();
         clu._reloadLogs = null;
-        return God.handleExit(proc, signal || code);
+        return God.handleExit(proc, code || 0, signal);
       });
 
-      if (proc.pm2_env.vizion !== false)
-        God.finalizeProcedure(proc)
-      else
-        God.notify('online', proc);
+      if (!clu.pm2_env.wait_ready)
+        return readyCb(clu);
 
-      console.log('App name:%s id:%s online', proc.pm2_env.name, proc.pm2_env.pm_id);
-      if (cb) cb(null, clu);
-      return false;
+      var listener = function (packet) {
+        if (packet.raw === 'ready' && packet.process.name === proc.pm2_env.name && packet.process.pm_id === proc.pm2_env.pm_id) {
+          God.bus.removeListener('process:msg', listener)
+          return readyCb(clu)
+        }
+      }
+      God.bus.on('process:msg', listener);
     });
   }
   return false;
@@ -242,8 +250,8 @@ God.executeApp = function executeApp(env, cb) {
  * @param {} exit_code
  * @return
  */
-God.handleExit = function handleExit(clu, exit_code) {
-  console.log('App name:%s id:%s exited with code %s', clu.pm2_env.name, clu.pm2_env.pm_id, exit_code);
+God.handleExit = function handleExit(clu, exit_code, kill_signal) {
+  console.log('App [%s] with id [%s] and pid [%s], exited with code [%s] via signal [%s]', clu.pm2_env.name, clu.pm2_env.pm_id, clu.process.pid, exit_code, kill_signal || 'SIGINT');
 
   var proc = this.clusters_db[clu.pm2_env.pm_id];
 
@@ -257,7 +265,8 @@ God.handleExit = function handleExit(clu, exit_code) {
 
   var stopping    = (proc.pm2_env.status == cst.STOPPING_STATUS
                      || proc.pm2_env.status == cst.STOPPED_STATUS
-                     || proc.pm2_env.status == cst.ERRORED_STATUS) || proc.pm2_env.autorestart === false;
+                     || proc.pm2_env.status == cst.ERRORED_STATUS) || (proc.pm2_env.autorestart === false ||
+                                                                       proc.pm2_env.autorestart === "false");
 
   var overlimit   = false;
 
@@ -274,7 +283,9 @@ God.handleExit = function handleExit(clu, exit_code) {
   if (proc.pm2_env.pm_id.toString().indexOf('_old_') !== 0) {
     try {
       fs.unlinkSync(proc.pm2_env.pm_pid_path);
-    } catch (e) {}
+    } catch (e) {
+      debug('Error when unlinking pid file', e);
+    }
   }
 
   /**
@@ -284,7 +295,7 @@ God.handleExit = function handleExit(clu, exit_code) {
 
   // And if the process has an uptime less than a second
   var min_uptime = typeof(proc.pm2_env.min_uptime) !== 'undefined' ? proc.pm2_env.min_uptime : 1000;
-  var max_restarts = typeof(proc.pm2_env.max_restarts) !== 'undefined' ? proc.pm2_env.max_restarts : 15;
+  var max_restarts = typeof(proc.pm2_env.max_restarts) !== 'undefined' ? proc.pm2_env.max_restarts : 16;
 
   if ((Date.now() - proc.pm2_env.created_at) < (min_uptime * max_restarts)) {
     if ((Date.now() - proc.pm2_env.pm_uptime) < min_uptime) {
@@ -321,24 +332,23 @@ God.handleExit = function handleExit(clu, exit_code) {
     return false;
   }
 
-  if (!stopping)
-    proc.pm2_env.restart_time += 1;
+  var restart_delay = 0;
+  if (proc.pm2_env.restart_delay !== undefined && !isNaN(parseInt(proc.pm2_env.restart_delay))) {
+    restart_delay = parseInt(proc.pm2_env.restart_delay);
+  }
 
-  if (!stopping && !overlimit)
-    this.executeApp(proc.pm2_env);
+  if (!stopping && !overlimit) {
+    setTimeout(function() {
+      proc.pm2_env.restart_time += 1;
+      God.executeApp(proc.pm2_env);
+    }, restart_delay);
+  }
 
   return false;
 };
 
 /**
- * First step before execution
- * Check if the -i parameter has been passed
- * so we execute the app multiple time
- * @api public
- * @method prepare
- * @param {Mixed} env
- * @param {} cb
- * @return Literal
+ * Init new process
  */
 God.prepare = function prepare(env, cb) {
   // If instances option is set (-i [arg])
@@ -358,46 +368,29 @@ God.prepare = function prepare(env, cb) {
       }
 
       env.NODE_APP_INSTANCE = instance_id++;
-      return God.executeApp(Common.clone(env), function(err, clu) {
+      env.vizion_running = false;
+
+      if (env.env && env.env.vizion_running)
+        env.env.vizion_running = false;
+
+      return God.executeApp(Utility.clone(env), function(err, clu) {
         if (err) return ex(i - 1);
-        arr.push(Common.clone(clu));
+        arr.push(Utility.clone(clu));
         God.notify('start', clu, true);
         return ex(i - 1);
       });
     })(env.instances);
   }
   else {
+    env.vizion_running = false;
+    if (env.env && env.env.vizion_running) env.env.vizion_running = false;
+
     return God.executeApp(env, function(err, clu) {
       God.notify('start', clu, true);
-      cb(err, [Common.clone(clu)]);
+      cb(err, [Utility.clone(clu)]);
     });
   }
   return false;
-};
-
-/**
- * Allows an app to be prepared using the same json format as the CLI, instead
- * of the internal PM2 format.
- * An array of applications is not currently supported. Call this method
- * multiple times with individual app objects if you have several to start.
- * @method prepareJson
- * @param app {Object}
- * @param {} cwd
- * @param cb {Function}
- * @return CallExpression
- */
-God.prepareJson = function prepareJson(app, cwd, cb) {
-  if (!cb) {
-    cb = cwd;
-    cwd = undefined;
-  }
-
-  app = Common.prepareAppConf(app, cwd);
-
-  if (app instanceof Error)
-    return cb(app);
-
-  return God.prepare(app, cb);
 };
 
 /**
@@ -416,9 +409,11 @@ God.finalizeProcedure = function finalizeProcedure(proc) {
   }
 
   proc.pm2_env.vizion_running = true;
-
   vizion.analyze({folder : current_path}, function recur_path(err, meta){
     var proc = God.clusters_db[proc_id];
+
+    if (err)
+      debug(err.stack || err);
 
     if (!proc ||
         !proc.pm2_env ||
@@ -448,5 +443,10 @@ God.finalizeProcedure = function finalizeProcedure(proc) {
   });
 };
 
+/**
+ * Worker
+ */
 require('./Worker.js')(God);
-God.Worker.start();
+setTimeout(function() {
+  God.Worker.start();
+}, 500);

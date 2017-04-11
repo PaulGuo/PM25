@@ -1,17 +1,18 @@
-
-var Common        = require('./Common');
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
 
 var Utility       = require('./Utility.js');
 
-var Event = module.exports = {};
-
-module.exports = function ForkMode(God) {
+module.exports = function(God) {
 
   God.notify = function(action_name, data, manually) {
     God.bus.emit('process:event', {
       event      : action_name,
       manually   : typeof(manually) == 'undefined' ? false : true,
-      process    : Common.formatCLU(data),
+      process    : Utility.formatCLU(data),
       at         : Utility.getDate()
     });
   };
@@ -24,7 +25,7 @@ module.exports = function ForkMode(God) {
     God.bus.emit('process:event', {
       event      : opts.action_name,
       manually   : typeof(opts.manually) == 'undefined' ? false : true,
-      process    : Common.formatCLU(proc),
+      process    : Utility.formatCLU(proc),
       at         : Utility.getDate()
     });
 

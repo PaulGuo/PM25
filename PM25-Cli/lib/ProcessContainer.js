@@ -1,3 +1,8 @@
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
 // ProcessContainer.js
 // Child wrapper. Redirect output to files, assign pid & co.
 // by Strzelewicz Alexandre
@@ -23,7 +28,12 @@ delete process.env.pm2_env;
  */
 (function ProcessContainer() {
   var fs          = require('fs');
-  var pmx         = require('pmx').init();
+
+  if (process.env.pmx !== "false")
+    require('pmx').init({
+      transactions: process.env.km_link == 'true' && process.env.trace == 'true' || false,
+      http: process.env.km_link == 'true' || false
+    });
 
   var stdFile     = pm2_env.pm_log_path;
   var outFile     = pm2_env.pm_out_log_path;
@@ -34,12 +44,22 @@ delete process.env.pm2_env;
   var cronRestart = pm2_env.cron_restart;
 
   var original_send = process.send;
+
+  if (typeof(process.env.source_map_support) != "undefined" &&
+      process.env.source_map_support !== "false") {
+    require('source-map-support').install();
+  }
+
   process.send = function() {
-    if (process.connected)
-      original_send.apply(this, arguments);
-    else
-      console.error('IPC channel with master closed');
+    if (process.connected) original_send.apply(this, arguments);
   };
+
+  //send node version
+  if (process.versions && process.versions.node) {
+    process.send({
+      'node_version': process.versions.node
+    });
+  }
 
   if (cst.MODIFY_REQUIRE)
     require.main.filename = pm2_env.pm_exec_path;
@@ -77,7 +97,16 @@ function cronize(cron_pattern) {
   var job = new cronJob({
     cronTime: cron_pattern,
     onTick: function() {
-      process.exit(0);
+      if (process.connected && process.send){
+        process.send({
+          'cron_restart': 1
+        });
+      } else {
+        process.emit('disconnect');
+        process.nextTick(function() {
+          process.exit(0);
+        });
+      }
     },
     start: false
   });
@@ -93,15 +122,27 @@ function cronize(cron_pattern) {
  */
 function exec(script, stds) {
   if (p.extname(script) == '.coffee') {
-    require('coffee-script/register');
+    try {
+      require('coffee-script/register');
+    } catch (e) {
+      console.error('Failed to load CoffeeScript interpreter:', e.stack || e);
+    }
   }
 
-  if (p.extname(script).indexOf('.es') > -1 ||
-      pm2_env.next_gen_js) {
-    require('babel/register')({
-      ignore: /node_modules/,
-      optional: ['es7.objectRestSpread']
-    });
+  if (p.extname(script) == '.ls') {
+    try {
+      require('livescript');
+    } catch (e) {
+      console.error('Failed to load LiveScript interpreter:', e.stack || e);
+    }
+  }
+
+  if (p.extname(script) == '.ts') {
+    try {
+      require('ts-node/register');
+    } catch (e) {
+      console.error('Failed to load Typescript interpreter:', e.stack || e);
+    }
   }
 
   process.on('message', function (msg) {
@@ -138,14 +179,15 @@ function exec(script, stds) {
           syscall: 'ProcessContainer.startLogging'
         }
       });
+      throw err;
       return;
     }
     process.stderr.write = (function(write) {
-      return function(string, encoding, fd) {
+      return function(string, encoding, cb) {
         var log_data = string.toString();
         if (pm2_env.log_date_format && moment)
           log_data = moment().format(pm2_env.log_date_format) + ': ' + log_data;
-        stds.err.write && stds.err.write(log_data);
+        stds.err.write && stds.err.write(log_data, encoding, cb);
         stds.std && stds.std.write && stds.std.write(log_data);
         process.send({
           type : 'log:err',
@@ -156,11 +198,11 @@ function exec(script, stds) {
     )(process.stderr.write);
 
     process.stdout.write = (function(write) {
-      return function(string, encoding, fd) {
+      return function(string, encoding, cb) {
         var log_data = string.toString();
         if (pm2_env.log_date_format && moment)
           log_data = moment().format(pm2_env.log_date_format) + ': ' + log_data;
-        stds.out.write && stds.out.write(log_data);
+        stds.out.write && stds.out.write(log_data, encoding, cb);
         stds.std && stds.std.write && stds.std.write(log_data);
         process.send({
           type : 'log:out',
@@ -169,37 +211,51 @@ function exec(script, stds) {
       };
     })(process.stdout.write);
 
-    process.on('uncaughtException', function uncaughtListener(err) {
-      logError(['std', 'err'], err.stack);
+    function getUncaughtExceptionListener(listener) {
+      return function uncaughtListener(err) {
+        var error = err && err.stack ? err.stack : err;
 
-      // Notify master that an uncaughtException has been catched
-      try {
-        var errObj = {};
+        if (listener === 'unhandledRejection') {
+          error = 'You have triggered an unhandledRejection, you may have forgotten to catch a Promise rejection:\n' + error;
+        }
 
-        Object.getOwnPropertyNames(err).forEach(function(key) {
-          errObj[key] = err[key];
-        });
+        logError(['std', 'err'], error);
 
-        process.send({
-          type : 'log:err',
-          data : err.stack ? '\n' + err.stack + '\n' : err
-        });
-        process.send({
-          type    : 'process:exception',
-          data    : errObj
-        });
-      } catch(e) {
-        logError(['std', 'err'], 'Channel is already closed can\'t broadcast error:\n' + e.stack);
+        // Notify master that an uncaughtException has been catched
+        try {
+          if (err) {
+            var errObj = {};
+
+            Object.getOwnPropertyNames(err).forEach(function(key) {
+              errObj[key] = err[key];
+            });
+          }
+
+          process.send({
+            type : 'log:err',
+            data : '\n' + error + '\n'
+          });
+          process.send({
+            type    : 'process:exception',
+            data    : errObj !== undefined ? errObj : {message: 'No error but ' + listener + ' was caught!'}
+          });
+        } catch(e) {
+          logError(['std', 'err'], 'Channel is already closed can\'t broadcast error:\n' + e.stack);
+        }
+
+        if (!process.listeners(listener).filter(function (listener) {
+            return listener !== uncaughtListener;
+        }).length) {
+          if (listener == 'uncaughtException') {
+            process.emit('disconnect');
+            process.exit(cst.CODE_UNCAUGHTEXCEPTION);
+          }
+        }
       }
+    }
 
-      if (!process.listeners('uncaughtException').filter(function (listener) {
-          return listener !== uncaughtListener;
-      }).length) {
-        process.emit('disconnect');
-        process.exit(cst.CODE_UNCAUGHTEXCEPTION);
-      }
-
-    });
+    process.on('uncaughtException', getUncaughtExceptionListener('uncaughtException'));
+    process.on('unhandledRejection', getUncaughtExceptionListener('unhandledRejection'));
 
     // Change dir to fix process.cwd
     process.chdir(pm2_env.pm_cwd || process.env.PWD || p.dirname(script));

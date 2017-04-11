@@ -1,97 +1,130 @@
+/**
+ * Copyright 2013 the PM2 project authors. All rights reserved.
+ * Use of this source code is governed by a license that
+ * can be found in the LICENSE file.
+ */
 
-var axon   = require('pm2-axon');
-var os     = require('os');
-var debug  = require('debug')('interface:push-interactor');
-var util   = require('util');
-var Url    = require('url');
-var fs     = require('fs');
+var axon      = require('pm2-axon');
+var os        = require('os');
+var debug     = require('debug')('interface:push-interactor');
+var debugInfo = require('debug')('interface:push:delay');
+var util      = require('util');
+var Url       = require('url');
+var fs        = require('fs');
 
-var pkg    = require('../../package.json');
-var cst    = require('../../constants.js');
-var Filter = require('./Filter.js');
-var Cipher = require('./Cipher.js');
+var pkg       = require('../../package.json');
+var cst       = require('../../constants.js');
+var Filter    = require('./Filter.js');
+var Cipher    = require('./Cipher.js');
+var Utility   = require('../Utility.js');
+var Aggregator = require('./TransactionAggregator.js');
 
-var Utility = require('../Utility.js');
+/**
+ * Instanciate a new axon connection
+ */
+function setupConnection(host) {
+  var that = this;
 
+  this._setup = function(host) {
+    console.log('[PUSH] Connecting %s:%s', host, cst.REMOTE_PORT_TCP);
+
+    var client = this.client = axon.socket('pub');
+
+    this.host = host;
+
+    client.on('connect', function() {
+      console.log('[PUSH] Connected');
+    });
+
+    client.on('error', function(e) {
+      console.log('[PUSH] Client got error', e.message);
+    });
+
+    client.on('close', function(e) {
+      console.log('[PUSH] Connection closed');
+    });
+
+    client.on('reconnect attempt', function(e) {
+      console.log('[PUSH] Reconnecting');
+    });
+
+    client.connect(cst.REMOTE_PORT_TCP, host);
+  };
+
+  this.destroy = function() {
+    this.client.close();
+    this.client.removeAllListeners();
+  };
+
+  this.reconnect = function() {
+    this.destroy();
+    this._setup(this.host);
+  };
+
+  this._setup(host);
+
+  return this;
+};
 
 var PushInteractor = module.exports = {
-  changeUrl : function(url) {
-    var self = this;
+  /**
+   * Connect to target host or reconnect if null is passed
+   * the host param must be formated like (http://HOST:PORT)
+   */
+  connectRemote : function(hostname) {
+    if (hostname)
+      hostname = Url.parse(hostname).hostname;
+    else if (this.socket && this.socket.host)
+      hostname = this.socket.host;
+    else
+      return console.error('NO HOST DEFINED');
 
-    console.log('[PUSH] Changing URL to %s', url);
+    if (this.socket)
+      this.socket.destroy();
 
-    var hostname = Url.parse(url).hostname;
-
-    this.tcpSocket.close();
-    this.tcpSocket = this.axonSock.connect(cst.REMOTE_PORT_TCP, hostname);
+    this.socket = setupConnection(hostname);
   },
+  /**
+   * Start the PushInteractor Singleton
+   */
   start : function(p) {
-    if (!p.url)      throw new Error('missing endpoint url');
-    if (!p.conf || !p.conf.ipm2) throw new Error('ipm2 is not initialized');
-
-    if (process.env.PM2_DEBUG)
-      cst.REMOTE_PORT_TCP = 3900;
+    if (!p.url)
+      throw new Error('missing endpoint url');
+    if (!p.conf || !p.conf.ipm2)
+      throw new Error('ipm2 is not initialized');
 
     var self = this;
-
-    var hostname = Url.parse(p.url).hostname;
-
-    this.axonSock  = axon.socket('pub');
-
-    this.tcpSocket = this.axonSock.connect(cst.REMOTE_PORT_TCP, hostname);
-
-    this.tcpSocket.on('connect', function() {
-      console.log('[PUSH] Connected via TCP');
-    });
-
-    this.tcpSocket.on('error', function(e) {
-      console.error(e.stack || e);
-    });
-
 
     this.conf = p.conf;
     this.ipm2 = p.conf.ipm2;
-    this.pm2_connected = false;
     this.send_buffer = [];
+    this._reconnect_counter = 0;
 
-    this.resetPacket = function() {
-      this._packet =  {
-        'server_name'       : self.conf.MACHINE_NAME,
-        'status'            : {},
-        'monitoring'        : {}
-      };
-    };
+    if (process.env.PM2_DEBUG)
+      cst.REMOTE_PORT_TCP = 3900;
+    if (process.env.NODE_ENV == 'local_test')
+      cst.REMOTE_PORT_TCP = 8080;
 
     this.resetPacket();
 
-    /**
-     * Handle PM2 connection state changes
-     */
+    this.connectRemote(p.url);
+
     this.ipm2.on('ready', function() {
-      console.log('[PUSH] Connected to local PM2');
-      PushInteractor.pm2_connected = true;
-      PushInteractor.startWorker();
+      console.log('[PUSH] PM2 interface ready, listening to PM2');
+      self.listenToPM2Events();
     });
 
-    this.ipm2.on('reconnecting', function() {
-      console.log('[PUSH] Reconnecting to PM2');
-      if (PushInteractor.timer_worker)
-        clearInterval(PushInteractor.timer_worker);
-      PushInteractor.pm2_connected = false;
-    });
-
-    PushInteractor.pm2_connected = true;
-
-    /**
-     * Start the chmilblik
-     */
-    this.processEvents();
+    self.startPoolingWorker();
+    self.aggregator = new Aggregator(self);
   },
   /**
    * Send bufferized data at regular interval
    */
-  startWorker : function() {
-    this.timer_worker = setInterval(function() {
+  startPoolingWorker : function() {
+    var self = this;
+
+    setInterval(function() {
+      debug('[PUSH] +---- Pooling: sending data ----+');
       PushInteractor.sendData();
     }, cst.SEND_INTERVAL);
   },
@@ -117,13 +150,34 @@ var PushInteractor = module.exports = {
     fs.readFile(file, function(err, data) {
       if (err) return console.error(err.stack || err);
       fs.unlink(file, function(e) { if (e) console.error(e.stack || e);});
-      return self.tcpSocket.send(JSON.stringify(meta), data);
+      return self.socket.client.send(JSON.stringify(meta), data);
     });
   },
-  processEvents : function() {
+  listenToPM2Events : function() {
+    var self = this;
+
+    self.log_buffer = {};
+
     this.ipm2.bus.on('*', function(event, packet) {
       if (event == 'axm:action') return false;
-      if (event.match(/^log:/) && !global._logs) return false;
+
+      // keep log in a buffer
+      if (event.match(/^log:/)) {
+        if (!self.log_buffer[packet.process.pm_id])
+          self.log_buffer[packet.process.pm_id] = [];
+        // push the log data
+        self.log_buffer[packet.process.pm_id].push(packet.data);
+        // delete the last one if too long
+        if (self.log_buffer[packet.process.pm_id].length >= 25)
+          self.log_buffer[packet.process.pm_id].pop();
+
+        // don't buffer if not asked
+        if (!global._logs) return false;
+      }
+
+      // attach log on exception
+      if (event === 'process:exception')
+        packet.data.last_logs = self.log_buffer[packet.process.pm_id];
 
       /**
        * This is a heapdump action
@@ -138,9 +192,8 @@ var PushInteractor = module.exports = {
         delete packet.data.__name;
       }
 
-      if (!packet.process) {
-        return console.error('Event without process attached to event name [%s]', event);
-      }
+      if (!packet.process)
+        return console.error('No process field [%s]', event);
 
       /**
        * Process specific messages
@@ -153,6 +206,10 @@ var PushInteractor = module.exports = {
         server: PushInteractor.conf.MACHINE_NAME
       };
 
+      // agregate transaction data before sending them
+      if (event.indexOf('axm:trace') > -1)
+        return self.aggregator.aggregate(packet);
+
       if (event.match(/^log:/)) {
         packet.log_type = event.split(':')[1];
         event = 'logs';
@@ -160,12 +217,21 @@ var PushInteractor = module.exports = {
       return PushInteractor.bufferData(event, packet);
     });
   },
+  resetPacket : function() {
+    var self = this;
+
+    this._packet =  {
+      'server_name'       : self.conf.MACHINE_NAME,
+      'status'            : {},
+      'monitoring'        : {}
+    };
+  },
   bufferData : function(event, packet) {
     var self = this;
     var logs_limit_size = 1024 * 50;
 
     // if (Object.keys(self._packet).indexOf(event) == -1) {
-    //   return console.error('SKIP unknow field name [%s]', event);
+    //   return console.error('SKIP unknown field name [%s]', event);
     // }
     debug('Buffering one more event %s', event);
 
@@ -175,7 +241,7 @@ var PushInteractor = module.exports = {
     if (packet.process && !packet.server) {
       if (event === 'logs'
           && (JSON.stringify(self._packet[event]).length > logs_limit_size
-             || self._packet[event].length > 100))
+              || self._packet[event].length > 100))
         return console.error('Logs packet larger than 50KB limit');
 
       self._packet[event].push(packet);
@@ -200,12 +266,15 @@ var PushInteractor = module.exports = {
 
       if ((ret = Filter.status(processes, PushInteractor.conf))) {
         self._packet['status'] = {
-          data : ret,
-          server_name : PushInteractor.conf.MACHINE_NAME
+          data        : ret,
+          server_name : self.conf.MACHINE_NAME,
+          internal_ip : self.conf.internal_ip,
+          protected   : global._pm2_password_protected,
+          rev_con     : self.conf.rev_con
         };
       }
 
-      return cb ? cb() : false;
+      return cb ? cb(null, ret) : false;
     });
   },
   /**
@@ -216,12 +285,26 @@ var PushInteractor = module.exports = {
   sendData : function() {
     var self = this;
 
+    if (self.socket.client &&
+        self.socket.client.socks[0] &&
+        self.socket.client.socks[0].bufferSize > 290000) {
+      self.resetPacket();
+      self._reconnect_counter++;
+      console.log('Buffer size too high (%d), stopping buffering and sending', self.socket.client.socks[0].bufferSize);
+
+      if (self._reconnect_counter > 20) {
+        console.log('[PUSH] Forcing reconnection');
+        self._reconnect_counter = 0;
+        self.socket.reconnect();
+      }
+      return false;
+    }
+
     this.preparePacket(function() {
       var data = {};
 
-      debug("Before: %s", util.inspect(self._packet, false, null, false));
-
-      if (process.env.NODE_ENV && process.env.NODE_ENV == 'test') {
+      if (process.env.NODE_ENV &&
+          (process.env.NODE_ENV == 'test' || process.env.NODE_ENV == 'local_test')) {
         data = {
           public_key : PushInteractor.conf.PUBLIC_KEY,
           sent_at    : Utility.getDate(),
@@ -229,11 +312,6 @@ var PushInteractor = module.exports = {
         };
       }
       else {
-
-        /**
-         * Cipher data with AES256
-         */
-
         var cipheredData = Cipher.cipherMessage(JSON.stringify(self._packet),
                                                 PushInteractor.conf.SECRET_KEY);
         data = {
@@ -243,20 +321,23 @@ var PushInteractor = module.exports = {
         };
       }
 
-      debug("After: %s", JSON.stringify(data));
+      var str = JSON.stringify(data);
+      var t1 = new Date();
 
-      self.tcpSocket.send(JSON.stringify(data));
-
-      data = null;
       self.resetPacket();
+
+      if (!self.socket) return false;
+
+      self.socket.client.sendv2(str, function() {
+        var duration_sec = (new Date() - t1) / 1000;
+        debugInfo('Time to flush data %ds (buffer size %d)', duration_sec);
+
+        if (duration_sec > 1)
+          console.info('[WARN] Time to send data over TCP took %dseconds!', duration_sec);
+
+        data = null;
+        str  = null;
+      });
     });
   }
 };
-
-//var punt   = require('punt');
-//this.udpSocket = punt.connect(host);
-//this.udpSocket = punt.connect(host);
-// this.udpSocket.sock.on('error', function(e) {
-//   console.log(e);
-// });
-//self.udpSocket.send(JSON.stringify(data));

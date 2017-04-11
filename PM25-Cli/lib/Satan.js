@@ -1,21 +1,29 @@
-'use strict';
-/**
- * Satan is the intermediate code between
- * the Daemon and the CLI client
- */
 
-/**
- * Dependencies
- */
+////////////////////////////////////////////////////////////////////////
+// /!\                                                                //
+// THIS FILE IS NOT USED ANYMORE IT IS ONLY HERE FOR BACKWARD SUPPORT //
+// WHILE UPGRADING OLDER PM2 (< 2.0)                                  //
+//                                                                    //
+// THIS FILE HAS BEEN NOW SPLITTED INTO TWO DISTINCT FILES            //
+//                                                                    //
+// NAMED                                                              //
+//                                                                    //
+// CLIENT.JS FOR THE CLIENT SIDE                                      //
+// AND                                                                //
+// DAEMON.JS FOR THE DAEMON (SERVER SIDE)                             //
+// /!\                                                                //
+////////////////////////////////////////////////////////////////////////
+
+var cst         = require('../constants.js');
 var rpc         = require('pm2-axon-rpc');
 var axon        = require('pm2-axon');
 var debug       = require('debug')('pm2:satan');
 var util        = require('util');
 var fs          = require('fs');
 var p           = require('path');
-var cst         = require('../constants.js');
 var Utility     = require('./Utility.js');
 var domain      = require('domain');
+var async       = require('async');
 
 /**
  * Export
@@ -44,10 +52,12 @@ Satan.start = function(noDaemonMode, cb) {
       if (noDaemonMode) {
         debug('Launching in no daemon mode');
         Satan.remoteWrapper();
-        return Satan.launchRPC(cb);
+        return Satan.launchRPC(function() {
+          require('./Modularizer.js').launchAll(cb);
+        });
       }
 
-      console.log(cst.PREFIX_MSG + 'Spawning PM2 daemon');
+      Satan.printOut(cst.PREFIX_MSG + 'Spawning PM2 daemon');
 
       // Daemonize PM2
       return Satan.launchDaemon(function(err, child) {
@@ -55,11 +65,10 @@ Satan.start = function(noDaemonMode, cb) {
           console.error(err);
           return cb ? cb(err) : process.exit(cst.ERROR_EXIT);
         }
-        console.log(cst.PREFIX_MSG + 'PM2 Successfully daemonized');
+        Satan.printOut(cst.PREFIX_MSG + 'PM2 Successfully daemonized');
         // Launch RPC
         return Satan.launchRPC(function() {
-          require('./Modularizer.js').launchAll();
-          return cb(null);
+          require('./Modularizer.js').launchAll(cb);
         });
       });
     }
@@ -81,14 +90,23 @@ Satan.processStateHandler = function(God) {
    * @return
    */
   function gracefullExit() {
-    console.log('pm2 has been killed by signal, dumping process list before exit...');
+    Satan.printOut('pm2 has been killed by signal, dumping process list before exit...');
 
     God.dumpProcessList(function() {
-      God.deleteAll({}, function() {
+
+      var processes = God.getFormatedProcesses();
+
+      async.eachLimit(processes, cst.CONCURRENT_ACTIONS, function(proc, next) {
+        console.log('Deleting process %s', proc.pm2_env.pm_id);
+        God.deleteProcessId(proc.pm2_env.pm_id, function() {
+          return next();
+        });
+        return false;
+      }, function(err) {
         try {
           fs.unlinkSync(cst.PM2_PID_FILE_PATH);
         } catch(e) {}
-        console.log('[PM2] Exited peacefully');
+        Satan.printOut('[PM2] Exited peacefully');
         process.exit(cst.SUCCESS_EXIT);
       });
     });
@@ -102,7 +120,7 @@ Satan.processStateHandler = function(God) {
 
   process.on('SIGILL', function() {
     global.gc();
-    console.log('Running garbage collector');
+    Satan.printOut('Running garbage collector');
   });
 
   process.on('SIGTERM', gracefullExit);
@@ -155,7 +173,7 @@ Satan.remoteWrapper = function() {
   this.pub_socket = pub.bind(cst.DAEMON_PUB_PORT);
 
   this.pub_socket.once('bind', function() {
-    console.log('BUS system [READY] on port %s', cst.DAEMON_PUB_PORT);
+    Satan.printOut('BUS system [READY] on port %s', cst.DAEMON_PUB_PORT);
     pub_socket_ready = true;
     sendReady();
   });
@@ -167,19 +185,18 @@ Satan.remoteWrapper = function() {
 
   var server = new rpc.Server(rep);
 
-  console.log('[[[[ PM2/God daemon launched ]]]]');
+  Satan.printOut('[[[[ PM2/God daemon launched ]]]]');
 
   this.rpc_socket = rep.bind(cst.DAEMON_RPC_PORT);
 
   this.rpc_socket.once('bind', function() {
-    console.log('RPC interface [READY] on port %s', cst.DAEMON_RPC_PORT);
+    Satan.printOut('RPC interface [READY] on port %s', cst.DAEMON_RPC_PORT);
     rpc_socket_ready = true;
     sendReady();
   });
 
   server.expose({
     prepare                 : God.prepare,
-    prepareJson             : God.prepareJson,
     getMonitorData          : God.getMonitorData,
     getSystemData           : God.getSystemData,
 
@@ -200,19 +217,16 @@ Satan.remoteWrapper = function() {
     notifyKillPM2           : God.notifyKillPM2,
     forceGc                 : God.forceGc,
 
-    findByScript            : God.findByScript,
-    findByPort              : God.findByPort,
     findByFullPath          : God.findByFullPath,
 
     msgProcess              : God.msgProcess,
-    ping                    : God.ping,
+    sendDataToProcessId     : God.sendDataToProcessId,
     sendSignalToProcessId   : God.sendSignalToProcessId,
     sendSignalToProcessName : God.sendSignalToProcessName,
-    getVersion              : God.getVersion,
-    reloadLogs              : God.reloadLogs,
 
-    lock                    : God.lock,
-    unlock                  : God.unlock
+    ping                    : God.ping,
+    getVersion              : God.getVersion,
+    reloadLogs              : God.reloadLogs
   });
 
   /**
@@ -244,40 +258,17 @@ Satan.remoteWrapper = function() {
   });
 
   /**
-   * Store output of custom action
-   * axm_action[]
-   *   - action_name  : name of the custom function
-   *   - opts         : misc options (e.g. for comments)
-   *   - arity        : function signature length
-   *   - output       : output of the custom action
-   */
-  God.bus.on('axm:action:stream', function axmActions(msg) {
-    var pm2_env    = msg.process;
-    var axm_action = msg.data;
-
-    if (!pm2_env || !God.clusters_db[pm2_env.pm_id])
-      return console.error('Unknown id %s', pm2_env.pm_id);
-
-    God.clusters_db[pm2_env.pm_id].pm2_env.axm_actions.forEach(function(actions) {
-      if (actions.action_name == axm_action.action_name) {
-        if (!actions.output)
-          actions.output = [];
-        actions.output.push(axm_action.return);
-      }
-    });
-  });
-
-  /**
    * Configure module
    */
   God.bus.on('axm:option:configuration', function axmMonitor(msg) {
     if (!msg.process)
-      return console.error('[axm:option:enable] no process defined');
+      return console.error('[axm:option:configuration] no process defined');
 
     if (!God.clusters_db[msg.process.pm_id])
-      return console.error('[axm:option:enable] Unknown id %s', msg.process.pm_id);
+      return console.error('[axm:option:configuration] Unknown id %s', msg.process.pm_id);
 
     try {
+      // Application Name nverride
       if (msg.data.name)
         God.clusters_db[msg.process.pm_id].pm2_env.name = msg.data.name;
 
@@ -300,7 +291,7 @@ Satan.remoteWrapper = function() {
     if (!msg.process || !God.clusters_db[msg.process.pm_id])
       return console.error('Unknown id %s', msg.process.pm_id);
 
-    God.clusters_db[msg.process.pm_id].pm2_env.axm_monitor = Utility.clone(msg.data);
+    util._extend(God.clusters_db[msg.process.pm_id].pm2_env.axm_monitor, Utility.clone(msg.data));
     msg = null;
   });
 
@@ -311,7 +302,6 @@ Satan.remoteWrapper = function() {
     if (['axm:action',
          'axm:monitor',
          'axm:option:setPID',
-         'axm:action:stream',
          'axm:option:configuration'].indexOf(this.event) > -1) {
       data_v = null;
       return false;
@@ -356,9 +346,8 @@ Satan.launchDaemon = function launchDaemon(cb) {
   }
 
   // Node.js tuning for better performance
-  node_args.push('--expose-gc'); // Allows manual GC in the code
-  node_args.push('--gc-global'); // Does full GC (smaller memory footprint)
-//  node_args.push('--nouse-idle-notification'); // Disables automatic GC
+  //node_args.push('--expose-gc'); // Allows manual GC in the code
+  //node_args.push('--gc-global'); // Does full GC (smaller memory footprint)
 
   /**
    * Add node [arguments] depending on PM2_NODE_OPTIONS env variable
@@ -367,17 +356,18 @@ Satan.launchDaemon = function launchDaemon(cb) {
     node_args = node_args.concat(process.env.PM2_NODE_OPTIONS.split(' '));
   node_args.push(SatanJS);
 
-  debug("env.PM2_HOME: " + process.env.PM2_HOME);
-  debug("env.HOME: " + process.env.HOME);
-  debug("env.HOMEPATH: " + process.env.HOMEPATH);
-  debug("resolved HOME: " + (process.env.PM2_HOME || process.env.HOME || process.env.HOMEPATH) );
+  var resolved_home = process.env.PM2_HOME || process.env.HOME || process.env.HOMEPATH;
 
-  var child = require('child_process').spawn('node', node_args, {
+  debug("PM2 home path: %s", resolved_home);
+  debug("Node.js engine full path: %s", process.execPath);
+  debug("Node.js with V8 arguments: %s", node_args);
+
+  var child = require('child_process').spawn(process.execPath || 'node', node_args, {
     detached   : true,
     cwd        : process.cwd(),
     env        : util._extend({
       'SILENT' : cst.DEBUG ? !cst.DEBUG : true,
-      'HOME'   : (process.env.PM2_HOME || process.env.HOME || process.env.HOMEPATH)
+      'HOME'   : resolved_home
     }, process.env),
     stdio      : ['ipc', out, err]
   });
@@ -392,12 +382,12 @@ Satan.launchDaemon = function launchDaemon(cb) {
   child.unref();
 
   child.once('message', function(msg) {
-    debug('PM2 daemon launched', msg);
+    debug('PM2 daemon launched with return message: ', msg);
     child.removeListener('error', onError);
     child.disconnect();
-    // Launch all installed plugins
-
     InteractorDaemonizer.launchAndInteract({}, function(err, data) {
+      if (data)
+        debug('Interactor launched');
       return cb ? cb(null, child) : false;
     });
   });
@@ -443,7 +433,7 @@ Satan.pingDaemon = function pingDaemon(cb) {
  * @return
  */
 Satan.launchRPC = function launchRPC(cb) {
-  debug('Launching RPC client on port %s %s', cst.DAEMON_RPC_PORT, cst.DAEMON_BIND_HOST);
+  debug('Launching RPC client on socket file %s', cst.DAEMON_RPC_PORT);
   var req      = axon.socket('req');
   Satan.client = new rpc.Client(req);
 
@@ -530,6 +520,11 @@ Satan.getExposedMethods = function getExposedMethods(cb) {
   Satan.client.methods(cb);
 };
 
+Satan.printOut = function() {
+  if (process.env.PM2_SILENT || process.env.PM2_PROGRAMMATIC === 'true') return false;
+  return console.log.apply(console, arguments);
+};
+
 /**
  * Description
  * @method executeRemote
@@ -539,18 +534,29 @@ Satan.getExposedMethods = function getExposedMethods(cb) {
  * @return
  */
 Satan.executeRemote = function executeRemote(method, env, fn) {
+  var env_watch = false;
+
+  if (env.env && env.env.watch)
+    env_watch = env.env.watch;
+
+  env_watch = util.isArray(env_watch) && env_watch.length === 0 ? !!~process.argv.indexOf('--watch') : env_watch;
+
   //stop watching when process is deleted
   if (method.indexOf('delete') !== -1) {
     Satan.stopWatch(method, env);
+  //stop everything on kill
   } else if(method.indexOf('kill') !== -1) {
     Satan.stopWatch('deleteAll', env);
-  } else if (process.argv.indexOf('--watch') !== -1 && method.indexOf('stop') !== -1) {
+  //stop watch on stop (stop doesn't accept env, yet)
+  } else if (~process.argv.indexOf('--watch') && method.indexOf('stop') !== -1) {
     Satan.stopWatch(method, env);
-  } else if (process.argv.indexOf('--watch') !== -1 && method.indexOf('restart') !== -1) {
+  //restart watch
+  } else if (env_watch && method.indexOf('restart') !== -1) {
     Satan.restartWatch(method, env);
   }
 
   if (!Satan.client || !Satan.client.call) {
+    if (fn) return fn(new Error('Could not connect to local pm2, have you called pm2.connect(function()})'));
     console.error('Did you forgot to call pm2.connect(function() { }) before interacting with PM2 ?');
     return process.exit(0);
   }
@@ -631,24 +637,10 @@ Satan.stopWatch = function stopWatch(method, env, fn) {
   });
 };
 
-Satan.lock = function(opts, cb) {
-  if (!opts.name)
-    return cb({msg:'You must pass a name to .lock method'});
-
-  Satan.executeRemote('lock', opts, cb);
-};
-
-Satan.unlock = function(opts, cb) {
-  if (!opts.name)
-    return cb({msg:'You must pass a name to .unlock method'});
-
-  Satan.executeRemote('unlock', opts, cb);
-};
-
-//
-// If this file is a main process, it means that
-// this process is being forked by pm2 itself
-//
+/**
+ * If this file is a main process, it means that
+ * this process is being forked by pm2 itself
+ */
 if (require.main === module) {
 
   var pkg = require('../package.json');
